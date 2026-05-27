@@ -3,9 +3,7 @@
 #include <cstddef>
 #include <functional>
 #include <optional>
-
-template <class T>
-class Sequence;
+#include "lab_2/sequence.hpp"
 
 template <class T>
 class LazySequence;
@@ -26,7 +24,6 @@ public:
     virtual ~Generator() = default;
 
     // Декомпозиция
-
     virtual T get_next();
 
     virtual bool has_next() const;
