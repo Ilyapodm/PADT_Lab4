@@ -1,22 +1,37 @@
 #pragma once
+
 #include <stdexcept>
+#include <cstddef>
 
-// infinite_count * omega + value
-struct Ordinal {
-    bool is_infinite;
-    size_t infinite_count;
-    size_t value;        
+//  omega * omega_coeff_ + finite_part_
+class Ordinal {
+public:
+    Ordinal() :  omega_coeff_(0), finite_part_(0) {} 
 
-    explicit Ordinal(size_t val) : is_infinite(false), infinite_count(0), value(val) {}
-    Ordinal() : is_infinite(true), infinite_count(1), value(0) {} 
-    Ordinal(size_t infinite_count, size_t val) : is_infinite(infinite_count > 0), infinite_count(infinite_count), value(val) {}
+    explicit Ordinal(std::size_t finite_part) 
+        :  omega_coeff_(0), finite_part_(finite_part) {}
+    
+    Ordinal(std::size_t omega_coeff_, std::size_t finite_part) 
+        : omega_coeff_(omega_coeff_), finite_part_(finite_part) {}  
 
-    static Ordinal infinity() {
+    static Ordinal omega() {
         return {1, 0};
     }
 
+    bool is_finite() const {
+        return omega_coeff_ == 0;
+    }
+
+    std::size_t get_omega_coeff() const {
+        return omega_coeff_;
+    }
+
+    std::size_t get_finite_part() const {
+        return finite_part_;
+    }
+
     bool operator==(const Ordinal& other) const {
-        return infinite_count == other.infinite_count && value == other.value;
+        return omega_coeff_ == other.omega_coeff_ && finite_part_ == other.finite_part_;
     }
 
     bool operator!=(const Ordinal& other) const {
@@ -24,38 +39,39 @@ struct Ordinal {
     }
 
     bool operator<(const Ordinal& other) const {
-        if (infinite_count < other.infinite_count) 
+        if (omega_coeff_ < other.omega_coeff_) 
             return true;
-        if (infinite_count > other.infinite_count) 
+        if (omega_coeff_ > other.omega_coeff_) 
             return false;
         
-        return value < other.value;
+        return finite_part_ < other.finite_part_;
     }
 
     Ordinal operator+(const Ordinal& other) const {
-        // omega * c1 + v1 + omega * c2 + v2 = omega * (c1 + c2) + v2
-        if (other.is_infinite) {
-            return {infinite_count + other.infinite_count, other.value};
+        // omega * c1 + f1 + omega * c2 + f2 = omega * (c1 + c2) + f2
+        if (other.omega_coeff_ > 0) {
+            return {omega_coeff_ + other.omega_coeff_, other.finite_part_};
         }
-        return {infinite_count, value + other.value};
+        return {omega_coeff_, finite_part_ + other.finite_part_};
     }
 
-    Ordinal operator-(const Ordinal& other) const {
-        if (other.infinite_count > infinite_count) {
-            return {0, 0};
-        }
-        
-        if (other.infinite_count == infinite_count) {
-            if (is_infinite) {
-                throw std::invalid_argument("Infinity minus infinity is undefined");
-            }
-            if (value > other.value) {
-                return {0, value - other.value};
-            }
-
-            return {0, 0};
+    Ordinal subtract_prefix(const Ordinal& prefix) const {
+        if (prefix.omega_coeff_ > omega_coeff_) {
+            throw std::invalid_argument("Can't subtract prefix, argument is too big");
         }
 
-        return {infinite_count - other.infinite_count, value};
+        if (prefix.omega_coeff_ == omega_coeff_) {
+            if (prefix.finite_part_ > finite_part_) {
+                throw std::invalid_argument("Can't subtract prefix, argument is too big");
+            }
+
+            return {0, finite_part_ - prefix.finite_part_};
+        }
+
+        return {omega_coeff_ - prefix.omega_coeff_, finite_part_};
     }
+
+private:
+    std::size_t omega_coeff_;
+    std::size_t finite_part_;
 };
