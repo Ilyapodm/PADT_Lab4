@@ -51,24 +51,33 @@ protected:
     }
 };
 
-// template <typename T>
-// class EmptyGenerator : public Generator<T> {
-//     virtual ~EmptyGenerator() = default;
+template <typename T>
+class EmptyGenerator : public Generator<T> {
+public:
+    virtual ~EmptyGenerator() = default;
 
-//     bool has_next() const override { return false; }
-//     T get_next() override { throw std::logic_error("There is no next element in EmptyGenerator"); }
+    bool has_next() const override { 
+        return false;
+    }
 
-//     Ordinal length() const override { return Ordinal(); }
-// }
+    T get_next() override {
+        throw std::logic_error("There is no next element in EmptyGenerator"); 
+    }
 
-// template <class T>
-// class GeneratorFactory {
-// public:
-//     virtual Generator<T>* create() const = 0;
-//     virtual Ordinal length() const = 0;
+    Ordinal length() const override {
+        return Ordinal(); 
+    }
 
-//     virtual ~GeneratorFactory() = default;
-// };
+    // if fact, it support 'get_at', but there is just no any valid indexes
+    bool supports_get_at() const override {
+        return true;
+    }
+
+    Generator<T>* clone() const override {
+        return new EmptyGenerator<T>(*this);
+    }
+};
+
 
 // template <typename T>
 // class SequenceGenerator : public Generator<T> {
