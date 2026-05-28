@@ -44,7 +44,7 @@ public:
     virtual Generator<T>* clone() const = 0;
 
 protected:
-    virtual T get_at_impl(const Ordinal& index) {
+    virtual T get_at_impl(const Ordinal&) {
         throw std::logic_error("get_at_impl is not implemented");
     }
 };

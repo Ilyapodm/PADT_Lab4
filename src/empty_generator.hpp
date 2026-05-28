@@ -9,8 +9,6 @@
 template <typename T>
 class EmptyGenerator : public Generator<T> {
 public:
-    virtual ~EmptyGenerator() = default;
-
     bool has_next() const override { 
         return false;
     }
