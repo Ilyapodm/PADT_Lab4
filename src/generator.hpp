@@ -1,9 +1,7 @@
 #pragma once
 
-#include <cstddef>
-#include <functional>
 #include <stdexcept>
-#include "lab_2/sequence.hpp"
+
 #include "lab_2/option.hpp"
 #include "ordinal.hpp"
 
@@ -50,76 +48,3 @@ protected:
         throw std::logic_error("get_at_impl is not implemented");
     }
 };
-
-template <typename T>
-class EmptyGenerator : public Generator<T> {
-public:
-    virtual ~EmptyGenerator() = default;
-
-    bool has_next() const override { 
-        return false;
-    }
-
-    T get_next() override {
-        throw std::logic_error("There is no next element in EmptyGenerator"); 
-    }
-
-    Ordinal length() const override {
-        return Ordinal(); 
-    }
-
-    // if fact, it support 'get_at', but there is just no any valid indexes
-    bool supports_get_at() const override {
-        return true;
-    }
-
-    // covariant return type
-    EmptyGenerator<T>* clone() const override {
-        return new EmptyGenerator<T>(*this);
-    }
-};
-
-
-template <typename T>
-class SequenceGenerator : public Generator<T> {
-public:
-    explicit SequenceGenerator(const Sequence<T>* source)
-        : source_(source) {
-            if (source_ == nullptr) {
-                throw std::invalid_argument("SequenceGenerator source is null");
-        }
-    }
-
-    bool has_next() const override {
-        return index_ < source_->get_size();
-    }
-
-    T get_next() override {
-        if (!has_next()) {
-            throw std::out_of_range("Generator is exhausted");
-        }
-
-        return source_->get(index_++);
-    }
-
-    Ordinal length() const override {
-        return Ordinal(source_->get_size());
-    }
-
-    bool supports_get_at() const override {
-        return true;
-    }
-
-    SequenceGenerator<T>* clone() const override {
-        return new SequenceGenerator<T>(*this);
-    }
-
-protected:
-    const T& get_at_impl(const Ordinal& index) override {
-        return source_->get(index.get_finite_part());
-    }
-private:
-    const Sequence<T>* source_;
-    std::size_t index_ = 0;
-};
-
