@@ -4,8 +4,8 @@
 #include <functional>
 #include "lab_2/sequence.hpp"
 #include "generator.hpp"
+#include "ordinal.hpp"
 
-class Cardinal;
 
 template <typename T>
 class LazySequence {
@@ -32,7 +32,7 @@ public:
 
     virtual LazySequence<T>* get_subsequence(int start_index, int end_index);
 
-    virtual Cardinal get_length() const;
+    virtual Ordinal get_length() const;
 
     virtual std::size_t get_materialized_count() const;
 

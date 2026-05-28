@@ -1,9 +1,8 @@
 #include <gtest/gtest.h>
 #include <stdexcept>
 
-#include "../src/ordinal.hpp"
+#include "ordinal.hpp"
 
-//TODO rename names of tests to PascalCase
 
 // just for less letters
 static Ordinal w(std::size_t k, std::size_t n = 0) {
@@ -47,79 +46,79 @@ TEST(OrdinalTest, FinitePlusOmegaAbsorbsFinitePart) {
     EXPECT_EQ(Ordinal(5) + Ordinal::omega(), w(1, 0));
 }
 
-TEST(OrdinalTest, omega_plus_finite_keeps_finite_tail) {
+TEST(OrdinalTest, OmegaPlusFiniteKeepsFiniteTail) {
     EXPECT_EQ(Ordinal::omega() + Ordinal(5), w(1, 5));
 }
 
-TEST(OrdinalTest, omega_plus_omega) {
+TEST(OrdinalTest, OmegaPlusOmega) {
     EXPECT_EQ(Ordinal::omega() + Ordinal::omega(), w(2, 0));
 }
 
-TEST(OrdinalTest, omega_with_tail_plus_omega_with_tail) {
+TEST(OrdinalTest, OmegaWithTailPlusOmegaWithTail) {
     EXPECT_EQ(w(1, 5) + w(1, 3), w(2, 3));  // only second tail is kept
 }
 
-TEST(OrdinalTest, omega_with_tail_plus_finite) {
+TEST(OrdinalTest, OmegaWithTailPlusFinite) {
     EXPECT_EQ(w(2, 4) + Ordinal(7), w(2, 11));
 }
 
-TEST(OrdinalTest, addition_is_not_commutative) {
+TEST(OrdinalTest, AdditionIsNotCommutative) {
     EXPECT_NE(Ordinal(5) + Ordinal::omega(), Ordinal::omega() + Ordinal(5));
 
     EXPECT_EQ(Ordinal(5) + Ordinal::omega(), w(1, 0));
     EXPECT_EQ(Ordinal::omega() + Ordinal(5), w(1, 5));
 }
 
-TEST(OrdinalTest, subtract_prefix_finite) {
+TEST(OrdinalTest, SubtractPrefixFinite) {
     EXPECT_EQ(Ordinal(7).subtract_prefix(Ordinal(3)), Ordinal(4));
 }
 
-TEST(OrdinalTest, subtract_prefix_equal_finite) {
+TEST(OrdinalTest, SubtractPrefixEqualFinite) {
     EXPECT_EQ(Ordinal(7).subtract_prefix(Ordinal(7)), Ordinal(0));
 }
 
-TEST(OrdinalTest, subtract_prefix_too_large_finite_throws) {
+TEST(OrdinalTest, SubtractPrefixTooLargeFiniteThrows) {
     EXPECT_THROW(
         Ordinal(3).subtract_prefix(Ordinal(7)),
         std::invalid_argument
     );
 }
 
-TEST(OrdinalTest, subtract_prefix_omega_from_omega) {
+TEST(OrdinalTest, SubtractPrefixOmegaFromOmega) {
     EXPECT_EQ(w(1, 0).subtract_prefix(w(1, 0)), Ordinal(0));
 }
 
-TEST(OrdinalTest, subtract_prefix_omega_from_omega_with_tail) {
+TEST(OrdinalTest, SubtractPrefixOmegaFromOmegaWithTail) {
     EXPECT_EQ(w(1, 5).subtract_prefix(w(1, 0)), Ordinal(5));
 }
 
-TEST(OrdinalTest, subtract_prefix_same_omega_coeff_subtracts_finite_parts) {
+TEST(OrdinalTest, SubtractPrefixSameOmegaCoeffSubtractsFiniteParts) {
     EXPECT_EQ(w(1, 7).subtract_prefix(w(1, 5)), Ordinal(2));
 }
 
-TEST(OrdinalTest, subtract_prefix_same_omega_coeff_but_bigger_tail_throws) {
+TEST(OrdinalTest, SubtractPrefixSameOmegaCoeffButBiggerTailThrows) {
     EXPECT_THROW(
         w(1, 3).subtract_prefix(w(1, 5)),
         std::invalid_argument
     );
 }
 
-TEST(OrdinalTest, subtract_prefix_smaller_omega_coeff_does_not_subtract_finite_tail) {
+TEST(OrdinalTest, SubtractPrefixSmallerOmegaCoeffDoesNotSubtractFiniteTail) {
     EXPECT_EQ(w(2, 4).subtract_prefix(w(1, 7)), w(1, 4));
 }
 
-TEST(OrdinalTest, subtract_prefix_multiple_omega_blocks) {
+TEST(OrdinalTest, SubtractPrefix_multiple_omega_blocks) {
     EXPECT_EQ(w(3, 2).subtract_prefix(w(2, 9)), w(1, 2));
 }
 
-TEST(OrdinalTest, subtract_prefix_too_large_omega_coeff_throws) {
+TEST(OrdinalTest, SubtractPrefixTooLargeOmegaCoeffThrows) {
     EXPECT_THROW(
         w(1, 0).subtract_prefix(w(2, 0)),
         std::invalid_argument
     );
 }
 
-TEST(OrdinalTest, subtract_prefix_result_satisfies_prefix_plus_result_equals_current) {
+TEST(OrdinalTest, SubtractPrefixResultSatisfiesPrefixPlusResultEqualsCurrent) {
     Ordinal current = w(2, 4);
     Ordinal prefix = w(1, 7);
 

@@ -1,9 +1,9 @@
-#pragma once
+// #pragma once
 
-#include "lazy_sequence.hpp"
+// #include "lazy_sequence.hpp"
 
-// пустой генератор
-template <typename T>
-LazySequence<T>::LazySequence() {
+// // пустой генератор
+// template <typename T>
+// LazySequence<T>::LazySequence() {
 
-}
+// }
