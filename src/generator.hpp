@@ -14,7 +14,7 @@ public:
     virtual ~Generator() = default;
     
     virtual bool has_next() const = 0;
-    virtual T get_next() = 0;
+    virtual const T& get_next() = 0;
 
     virtual Ordinal length() const = 0;
 
@@ -46,7 +46,7 @@ public:
     virtual Generator<T>* clone() const = 0;
 
 protected:
-    virtual T get_at_impl(const Ordinal& index) {
+    virtual const T& get_at_impl(const Ordinal& index) {
         throw std::logic_error("get_at_impl is not implemented");
     }
 };
@@ -60,7 +60,7 @@ public:
         return false;
     }
 
-    T get_next() override {
+    const T& get_next() override {
         throw std::logic_error("There is no next element in EmptyGenerator"); 
     }
 
@@ -73,48 +73,53 @@ public:
         return true;
     }
 
-    Generator<T>* clone() const override {
+    // covariant return type
+    EmptyGenerator<T>* clone() const override {
         return new EmptyGenerator<T>(*this);
     }
 };
 
 
-// template <typename T>
-// class SequenceGenerator : public Generator<T> {
-// public:
-//     explicit SequenceGenerator(const Sequence<T>* source)
-//         : source_(source) {}
+template <typename T>
+class SequenceGenerator : public Generator<T> {
+public:
+    explicit SequenceGenerator(const Sequence<T>* source)
+        : source_(source) {
+            if (source_ == nullptr) {
+                throw std::invalid_argument("SequenceGenerator source is null");
+        }
+    }
 
-//     bool has_next() const override {
-//         return index_ < source_->get_size();
-//     }
+    bool has_next() const override {
+        return index_ < source_->get_size();
+    }
 
-//     T get_next() override {
-//         if (!has_next()) {
-//             throw std::out_of_range("Generator is exhausted");
-//         }
+    T get_next() override {
+        if (!has_next()) {
+            throw std::out_of_range("Generator is exhausted");
+        }
 
-//         return source_->get(index_++);
-//     }
+        return source_->get(index_++);
+    }
 
-//     Ordinal length() const override {
-//         return ordinal(source_->get_size());
-//     }
+    Ordinal length() const override {
+        return Ordinal(source_->get_size());
+    }
 
-//     bool supports_get_at() const override {
-//         return true;
-//     }
+    bool supports_get_at() const override {
+        return true;
+    }
 
-//     T get_at(const Ordinal& index) override {
-//         if (!index.is_finite()) {
-//             throw std::out_of_range("Infinite index for finite sequence");
-//         }
+    SequenceGenerator<T>* clone() const override {
+        return new SequenceGenerator<T>(*this);
+    }
 
-//         return source_->get(index.get_finite_part());
-//     }
-
-// private:
-//     const Sequence<T>* source_;
-//     std::size_t index_ = 0;
-// };
+protected:
+    const T& get_at_impl(const Ordinal& index) override {
+        return source_->get(index.get_finite_part());
+    }
+private:
+    const Sequence<T>* source_;
+    std::size_t index_ = 0;
+};
 
