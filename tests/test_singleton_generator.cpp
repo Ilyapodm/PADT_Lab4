@@ -3,7 +3,7 @@
 
 #include "singleton_generator.hpp"
 
-TEST(SingletonGeneratorTest, basic_behavior) {
+TEST(SingletonGeneratorTest, BasicBehavior) {
     SingletonGenerator<int> generator(42);
 
     EXPECT_TRUE(generator.has_next());
@@ -18,7 +18,7 @@ TEST(SingletonGeneratorTest, basic_behavior) {
     EXPECT_THROW(generator.get_next(), std::out_of_range);
 }
 
-TEST(SingletonGeneratorTest, get_at_checks_bounds) {
+TEST(SingletonGeneratorTest, GetAtChecksBounds) {
     SingletonGenerator<int> generator(42);
 
     EXPECT_EQ(generator.get_at(Ordinal(0)), 42);
@@ -27,17 +27,17 @@ TEST(SingletonGeneratorTest, get_at_checks_bounds) {
     EXPECT_THROW(generator.get_at(Ordinal::omega()), std::out_of_range);
 }
 
-TEST(SingletonGeneratorTest, get_at_does_not_depend_on_get_next_state) {
+TEST(SingletonGeneratorTest, GetAtDoesNotDependOnGetNextState) {
     SingletonGenerator<int> generator(42);
 
     EXPECT_EQ(generator.get_next(), 42);
     EXPECT_FALSE(generator.has_next());
 
-    // get_at работает независимо от последовательного чтения
+    // get_at works independently
     EXPECT_EQ(generator.get_at(Ordinal(0)), 42);
 }
 
-TEST(SingletonGeneratorTest, clone_preserves_state_before_reading) {
+TEST(SingletonGeneratorTest, ClonePreservesStateBeforeReading) {
     SingletonGenerator<int> generator(42);
 
     Generator<int>* clone = generator.clone();
@@ -54,7 +54,7 @@ TEST(SingletonGeneratorTest, clone_preserves_state_before_reading) {
     delete clone;
 }
 
-TEST(SingletonGeneratorTest, clone_preserves_state_after_reading) {
+TEST(SingletonGeneratorTest, ClonePreservesStateAfterReading) {
     SingletonGenerator<int> generator(42);
 
     EXPECT_EQ(generator.get_next(), 42);

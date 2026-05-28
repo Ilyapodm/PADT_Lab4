@@ -3,12 +3,14 @@
 
 #include "../src/ordinal.hpp"
 
+//TODO rename names of tests to PascalCase
+
 // just for less letters
 static Ordinal w(std::size_t k, std::size_t n = 0) {
     return Ordinal(k, n);
 }
 
-TEST(OrdinalTest, finite_construction) {
+TEST(OrdinalTest, FiniteConstruction) {
     Ordinal a(5);
 
     EXPECT_TRUE(a.is_finite());
@@ -16,7 +18,7 @@ TEST(OrdinalTest, finite_construction) {
     EXPECT_EQ(a.get_finite_part(), 5);
 }
 
-TEST(OrdinalTest, omega_construction) {
+TEST(OrdinalTest, OmegaConstruction) {
     Ordinal omega = Ordinal::omega();
 
     EXPECT_FALSE(omega.is_finite());
@@ -24,24 +26,24 @@ TEST(OrdinalTest, omega_construction) {
     EXPECT_EQ(omega.get_finite_part(), 0);
 }
 
-TEST(OrdinalTest, equality) {
+TEST(OrdinalTest, Equality) {
     EXPECT_EQ(w(1, 5), w(1, 5));
     EXPECT_NE(w(1, 5), w(1, 6));
     EXPECT_NE(w(1, 5), w(2, 5));
 }
 
-TEST(OrdinalTest, comparison) {
+TEST(OrdinalTest, Comparison) {
     EXPECT_LT(Ordinal(3), Ordinal(5));
     EXPECT_LT(Ordinal(100), Ordinal::omega());
     EXPECT_LT(w(1, 3), w(1, 5));
     EXPECT_LT(w(1, 100), w(2, 0));
 }
 
-TEST(OrdinalTest, finite_addition) {
+TEST(OrdinalTest, FiniteAddition) {
     EXPECT_EQ(Ordinal(2) + Ordinal(3), Ordinal(5));
 }
 
-TEST(OrdinalTest, finite_plus_omega_absorbs_finite_part) {
+TEST(OrdinalTest, FinitePlusOmegaAbsorbsFinitePart) {
     EXPECT_EQ(Ordinal(5) + Ordinal::omega(), w(1, 0));
 }
 

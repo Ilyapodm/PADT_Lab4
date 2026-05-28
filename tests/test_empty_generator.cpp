@@ -3,7 +3,7 @@
 
 #include "empty_generator.hpp"
 
-TEST(EmptyGeneratorTest, basic_behavior) {
+TEST(EmptyGeneratorTest, BasicBehavior) {
     EmptyGenerator<int> generator;
 
     EXPECT_FALSE(generator.has_next());
@@ -16,7 +16,7 @@ TEST(EmptyGeneratorTest, basic_behavior) {
     EXPECT_THROW(generator.get_at(Ordinal(0)), std::out_of_range);
 }
 
-TEST(EmptyGeneratorTest, clone_preserves_empty_behavior) {
+TEST(EmptyGeneratorTest, ClonePreservesEmptyBehavior) {
     EmptyGenerator<int> generator;
 
     Generator<int>* clone = generator.clone();

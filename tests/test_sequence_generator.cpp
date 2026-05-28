@@ -4,7 +4,7 @@
 #include "sequence_generator.hpp"
 #include "array_sequence.hpp"
 
-TEST(SequenceGeneratorTest, reads_sequence_by_get_next_and_get_at) {
+TEST(SequenceGeneratorTest, ReadsSequenceByGetNextAndGetAt) {
     int items[] = {10, 20, 30};
     MutableArraySequence<int> source(items, 3);
 
@@ -33,7 +33,7 @@ TEST(SequenceGeneratorTest, reads_sequence_by_get_next_and_get_at) {
     EXPECT_THROW(generator.get_next(), std::out_of_range);
 }
 
-TEST(SequenceGeneratorTest, get_at_checks_bounds) {
+TEST(SequenceGeneratorTest, GetAtChecksBounds) {
     int items[] = {10, 20, 30};
     MutableArraySequence<int> source(items, 3);
 
@@ -43,7 +43,7 @@ TEST(SequenceGeneratorTest, get_at_checks_bounds) {
     EXPECT_THROW(generator.get_at(Ordinal::omega()), std::out_of_range);
 }
 
-TEST(SequenceGeneratorTest, clone_preserves_current_read_position) {
+TEST(SequenceGeneratorTest, ClonePreservesCurrentReadPosition) {
     int items[] = {10, 20, 30};
     MutableArraySequence<int> source(items, 3);
 
