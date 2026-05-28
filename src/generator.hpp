@@ -14,7 +14,7 @@ public:
     virtual ~Generator() = default;
     
     virtual bool has_next() const = 0;
-    virtual const T& get_next() = 0;
+    virtual T get_next() = 0;
 
     virtual Ordinal length() const = 0;
 
@@ -46,7 +46,7 @@ public:
     virtual Generator<T>* clone() const = 0;
 
 protected:
-    virtual const T& get_at_impl(const Ordinal& index) {
+    virtual T get_at_impl(const Ordinal& index) {
         throw std::logic_error("get_at_impl is not implemented");
     }
 };
@@ -60,7 +60,7 @@ public:
         return false;
     }
 
-    const T& get_next() override {
+    T get_next() override {
         throw std::logic_error("There is no next element in EmptyGenerator"); 
     }
 
