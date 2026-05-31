@@ -33,18 +33,10 @@ public:
         return Ordinal(source_->get_size());
     }
 
-    bool supports_get_at() const override {
-        return true;
-    }
-
     SequenceGenerator<T>* clone() const override {
         return new SequenceGenerator<T>(*this);
     }
 
-protected:
-    T get_at_impl(const Ordinal& index) override {
-        return source_->get(index.get_finite_part());
-    }
 private:
     const Sequence<T>* source_;
     std::size_t index_ = 0;

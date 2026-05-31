@@ -28,17 +28,10 @@ public:
         return Ordinal(1);
     }
 
-    bool supports_get_at() const override {
-        return true;
-    }
-
     SingletonGenerator<T>* clone() const override {
         return new SingletonGenerator<T>(*this);
     }
-protected:
-    T get_at_impl(const Ordinal&) override {
-        return value_;
-    }
+
 private:
     bool is_exhausted_ = false;
     T value_;

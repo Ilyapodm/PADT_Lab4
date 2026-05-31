@@ -21,11 +21,6 @@ public:
         return Ordinal(); 
     }
 
-    // if fact, it support 'get_at', but there is just no any valid indexes
-    bool supports_get_at() const override {
-        return true;
-    }
-
     // covariant return type
     EmptyGenerator<T>* clone() const override {
         return new EmptyGenerator<T>(*this);

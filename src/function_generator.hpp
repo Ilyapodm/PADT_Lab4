@@ -37,17 +37,8 @@ public:
         return length_;
     }
 
-    bool supports_get_at() const override {
-        return true;
-    }
-
     FunctionGenerator<T>* clone() const override {
         return new FunctionGenerator<T>(*this);
-    }
-
-protected:
-    T get_at_impl(const Ordinal& index) override {
-        return func_(index.get_finite_part());
     }
 
 private:

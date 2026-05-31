@@ -51,8 +51,6 @@ public:
         return length_;
     }
 
-    // do not support 'get_at', it's written in Generator
-
     RecurrenceGenerator<T>* clone() const override {
         return new RecurrenceGenerator<T>(*this);
     }
@@ -62,6 +60,6 @@ private:
     Ordinal length_;
     // function have to work with buffer's 'get' or we have to do array appends, removes or copies of buffer into T*
     std::function<T(const RingBuffer<T>&)> rule_;  
-    std::size_t count_;
+    std::size_t count_;  // size of window
     std::size_t index_ = 0;
 };
