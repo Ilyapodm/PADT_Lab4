@@ -22,6 +22,10 @@ public:
         return omega_coeff_ == 0;
     }
 
+    bool has_end() const {
+        return !(omega_coeff_ > 0 && finite_part_ == 0);
+    }
+
     std::size_t get_omega_coeff() const {
         return omega_coeff_;
     }
