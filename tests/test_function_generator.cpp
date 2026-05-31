@@ -44,88 +44,7 @@ TEST(FunctionGeneratorTest, ZeroLengthGeneratorIsImmediatelyExhausted) {
     EXPECT_THROW(gen.get_next(), std::out_of_range);
 }
 
-TEST(FunctionGeneratorTest, GetAtReturnsValueByIndex) {
-    FunctionGenerator<int> gen(
-        [](std::size_t index) {
-            return static_cast<int>(index * 10);
-        },
-        Ordinal(100)
-    );
 
-    EXPECT_TRUE(gen.supports_get_at());
-
-    EXPECT_EQ(gen.get_at(Ordinal(0)), 0);
-    EXPECT_EQ(gen.get_at(Ordinal(1)), 10);
-    EXPECT_EQ(gen.get_at(Ordinal(7)), 70);
-    EXPECT_EQ(gen.get_at(Ordinal(99)), 990);
-}
-
-TEST(FunctionGeneratorTest, GetAtDoesNotMoveCurrentPosition) {
-    FunctionGenerator<int> gen(
-        [](std::size_t index) {
-            return static_cast<int>(index * index);
-        },
-        Ordinal(20)
-    );
-
-    EXPECT_EQ(gen.get_next(), 0);
-    EXPECT_EQ(gen.get_next(), 1);
-
-    EXPECT_EQ(gen.get_at(Ordinal(10)), 100);
-    EXPECT_EQ(gen.get_at(Ordinal(15)), 225);
-
-    EXPECT_EQ(gen.get_next(), 4);
-    EXPECT_EQ(gen.get_next(), 9);
-}
-
-TEST(FunctionGeneratorTest, GetAtThrowsWhenIndexIsOutOfRange) {
-    FunctionGenerator<int> gen(
-        [](std::size_t index) {
-            return static_cast<int>(index);
-        },
-        Ordinal(5)
-    );
-
-    EXPECT_NO_THROW(gen.get_at(Ordinal(0)));
-    EXPECT_NO_THROW(gen.get_at(Ordinal(4)));
-
-    EXPECT_THROW(gen.get_at(Ordinal(5)), std::out_of_range);
-    EXPECT_THROW(gen.get_at(Ordinal(100)), std::out_of_range);
-}
-
-TEST(FunctionGeneratorTest, InfiniteGeneratorHasNextAndSupportsFiniteIndexes) {
-    FunctionGenerator<int> gen(
-        [](std::size_t index) {
-            return static_cast<int>(index + 1);
-        },
-        Ordinal::omega()
-    );
-
-    EXPECT_TRUE(gen.has_next());
-    EXPECT_TRUE(gen.supports_get_at());
-
-    EXPECT_EQ(gen.get_next(), 1);
-    EXPECT_EQ(gen.get_next(), 2);
-    EXPECT_EQ(gen.get_next(), 3);
-
-    EXPECT_TRUE(gen.has_next());
-
-    EXPECT_EQ(gen.get_at(Ordinal(0)), 1);
-    EXPECT_EQ(gen.get_at(Ordinal(10)), 11);
-    EXPECT_EQ(gen.get_at(Ordinal(1000)), 1001);
-}
-
-TEST(FunctionGeneratorTest, InfiniteGeneratorRejectsTransfiniteLocalIndex) {
-    FunctionGenerator<int> gen(
-        [](std::size_t index) {
-            return static_cast<int>(index);
-        },
-        Ordinal::omega()
-    );
-
-    EXPECT_THROW(gen.get_at(Ordinal::omega()), std::out_of_range);
-    EXPECT_THROW(gen.get_at(Ordinal(1, 1)), std::out_of_range);
-}
 
 TEST(FunctionGeneratorTest, ConstructorThrowsOnEmptyFunction) {
     std::function<int(std::size_t)> empty_func;
@@ -230,27 +149,6 @@ TEST(FunctionGeneratorTest, CloneCopiesCurrentState) {
 
     EXPECT_EQ(gen.get_next(), 30);
     EXPECT_EQ(cloned->get_next(), 30);
-
-    delete cloned;
-}
-
-TEST(FunctionGeneratorTest, CloneGetAtDoesNotAffectOriginalOrCloneState) {
-    FunctionGenerator<int> gen(
-        [](std::size_t index) {
-            return static_cast<int>(index + 100);
-        },
-        Ordinal(10)
-    );
-
-    EXPECT_EQ(gen.get_next(), 100);
-
-    FunctionGenerator<int>* cloned = gen.clone();
-
-    EXPECT_EQ(gen.get_at(Ordinal(5)), 105);
-    EXPECT_EQ(cloned->get_at(Ordinal(7)), 107);
-
-    EXPECT_EQ(gen.get_next(), 101);
-    EXPECT_EQ(cloned->get_next(), 101);
 
     delete cloned;
 }

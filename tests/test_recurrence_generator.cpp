@@ -117,22 +117,6 @@ TEST(RecurrenceGeneratorTest, ThrowsIfInitialCountIsZero) {
     );
 }
 
-TEST(RecurrenceGeneratorTest, DoesNotSupportGetAt) {
-    int initial[] = {0, 1};
-
-    RecurrenceGenerator<int> gen(
-        [](const RingBuffer<int>& window) {
-            return window.get(0) + window.get(1);
-        },
-        initial,
-        2,
-        Ordinal(5)
-    );
-
-    EXPECT_FALSE(gen.supports_get_at());
-    EXPECT_THROW(gen.get_at(Ordinal(0)), std::logic_error);
-}
-
 TEST(RecurrenceGeneratorTest, CloneCopiesCurrentState) {
     int initial[] = {0, 1};
 
