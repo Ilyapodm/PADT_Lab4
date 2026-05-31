@@ -51,6 +51,23 @@ public:
         return finite_part_ < other.finite_part_;
     }
 
+    bool operator<=(const Ordinal& other) const {
+        if (omega_coeff_ < other.omega_coeff_) 
+            return true;
+        if (omega_coeff_ > other.omega_coeff_) 
+            return false;
+        
+        return finite_part_ <= other.finite_part_;
+    }
+
+    bool operator>(const Ordinal& other) const {
+        return !(*this <= other);
+    }
+
+    bool operator>=(const Ordinal& other) const {
+        return !(*this < other);
+    }
+
     Ordinal operator+(const Ordinal& other) const {
         // omega * c1 + f1 + omega * c2 + f2 = omega * (c1 + c2) + f2
         if (other.omega_coeff_ > 0) {
