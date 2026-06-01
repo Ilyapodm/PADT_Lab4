@@ -49,8 +49,8 @@ public:
         return length_;
     }
 
-    RemoveAtNode<T>* clone() const override {
-        return new RemoveAtNode<T>(*this);
+    RemoveAtNode* clone() const override {
+        return new RemoveAtNode(*this);
     }
 
 protected:

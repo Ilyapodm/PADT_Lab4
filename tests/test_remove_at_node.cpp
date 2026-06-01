@@ -8,10 +8,6 @@
 #include "remove_at_node.hpp"
 #include "ordinal.hpp"
 
-static Ordinal omega() {
-    return Ordinal(1, 0);
-}
-
 static Ordinal omega_plus(std::size_t finite_part) {
     return Ordinal(1, finite_part);
 }
@@ -96,7 +92,7 @@ TEST(RemoveAtNodeTest, ConstructorThrowsWhenIndexEqualsFiniteLength) {
 }
 
 TEST(RemoveAtNodeTest, RemovesFiniteIndexFromOmegaSource) {
-    FunctionGenerator<int> gen(identity_value, omega());
+    FunctionGenerator<int> gen(identity_value, Ordinal::omega());
     SourceNode<int> source(gen);
 
     RemoveAtNode<int> node(source, Ordinal(5));
@@ -111,16 +107,16 @@ TEST(RemoveAtNodeTest, RemovesFiniteIndexFromOmegaSource) {
 }
 
 TEST(RemoveAtNodeTest, ConstructorThrowsWhenRemovingOmegaIndexFromOmegaSource) {
-    FunctionGenerator<int> gen(identity_value, omega());
+    FunctionGenerator<int> gen(identity_value, Ordinal::omega());
     SourceNode<int> source(gen);
 
     EXPECT_THROW({
-        RemoveAtNode<int> node(source, omega());
+        RemoveAtNode<int> node(source, Ordinal::omega());
     }, std::out_of_range);
 }
 
 TEST(RemoveAtNodeTest, RemovesFiniteIndexFromOmegaPlusFiniteSource) {
-    FunctionGenerator<int> left_gen(identity_value, omega());
+    FunctionGenerator<int> left_gen(identity_value, Ordinal::omega());
     SourceNode<int> left(left_gen);
 
     FunctionGenerator<int> right_gen(tail_value, Ordinal(3));
@@ -142,7 +138,7 @@ TEST(RemoveAtNodeTest, RemovesFiniteIndexFromOmegaPlusFiniteSource) {
 }
 
 TEST(RemoveAtNodeTest, RemovesElementFromFiniteTailAfterOmega) {
-    FunctionGenerator<int> left_gen(identity_value, omega());
+    FunctionGenerator<int> left_gen(identity_value, Ordinal::omega());
     SourceNode<int> left(left_gen);
 
     FunctionGenerator<int> right_gen(tail_value, Ordinal(3));
@@ -165,7 +161,7 @@ TEST(RemoveAtNodeTest, RemovesElementFromFiniteTailAfterOmega) {
 }
 
 TEST(RemoveAtNodeTest, RemovesLastElementFromFiniteTailAfterOmega) {
-    FunctionGenerator<int> left_gen(identity_value, omega());
+    FunctionGenerator<int> left_gen(identity_value, Ordinal::omega());
     SourceNode<int> left(left_gen);
 
     FunctionGenerator<int> right_gen(tail_value, Ordinal(3));
@@ -185,7 +181,7 @@ TEST(RemoveAtNodeTest, RemovesLastElementFromFiniteTailAfterOmega) {
 }
 
 TEST(RemoveAtNodeTest, ConstructorThrowsWhenIndexEqualsOmegaPlusFiniteLength) {
-    FunctionGenerator<int> left_gen(identity_value, omega());
+    FunctionGenerator<int> left_gen(identity_value, Ordinal::omega());
     SourceNode<int> left(left_gen);
 
     FunctionGenerator<int> right_gen(tail_value, Ordinal(3));
