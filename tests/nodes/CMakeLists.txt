@@ -1,0 +1,11 @@
+target_sources(lab_tests
+    PRIVATE
+        test_source_node.cpp
+        test_concat_node.cpp
+        test_subsequence_node.cpp
+        test_set_node.cpp
+        test_insert_at_node.cpp
+        test_remove_at_node.cpp
+        test_append_node.cpp
+        test_prepend_node.cpp
+)

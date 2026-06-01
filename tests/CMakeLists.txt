@@ -9,18 +9,21 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(googletest)
 
-file(GLOB_RECURSE TEST_SOURCES
-    CONFIGURE_DEPENDS
-        ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
-)
-
-add_executable(lab_tests ${TEST_SOURCES})
+add_executable(lab_tests)
 
 target_link_libraries(lab_tests
     PRIVATE
-        lazy_sequence
+        lab4::core
         GTest::gtest_main
 )
+
+add_subdirectory(adt)
+add_subdirectory(core)
+add_subdirectory(generators)
+add_subdirectory(nodes)
+# add_subdirectory(lazy_sequence)
+# add_subdirectory(smart_data)
+# add_subdirectory(streams)
 
 include(GoogleTest)
 gtest_discover_tests(lab_tests)

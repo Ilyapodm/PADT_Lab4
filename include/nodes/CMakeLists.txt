@@ -1,0 +1,12 @@
+target_sources(lab4_core
+    INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/node.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/source_node.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/concat_node.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/subsequence_node.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/set_node.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/insert_at_node.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/remove_at_node.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/append_node.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/prepend_node.hpp
+)

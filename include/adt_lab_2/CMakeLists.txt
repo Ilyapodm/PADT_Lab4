@@ -1,0 +1,16 @@
+target_sources(lab4_core
+    INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/sequence.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/sequence.tpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/array_sequence.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/array_sequence.tpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/list_sequence.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/list_sequence.tpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/dynamic_array.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/dynamic_array.tpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/linked_list.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/linked_list.tpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/option.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ienumerator.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ienumerable.hpp
+)
