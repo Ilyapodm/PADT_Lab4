@@ -81,7 +81,7 @@ TEST(SetNodeTest, ConstructorThrowsWhenSetIndexEqualsLength) {
 
     EXPECT_THROW({
         SetNode<int> node(source, 999, Ordinal(5));
-    }, std::invalid_argument);
+    }, std::out_of_range);
 }
 
 TEST(SetNodeTest, ConstructorThrowsWhenSetIndexGreaterThanLength) {
@@ -90,7 +90,7 @@ TEST(SetNodeTest, ConstructorThrowsWhenSetIndexGreaterThanLength) {
 
     EXPECT_THROW({
         SetNode<int> node(source, 999, Ordinal(10));
-    }, std::invalid_argument);
+    }, std::out_of_range);
 }
 
 TEST(SetNodeTest, AccessToReplacedIndexDoesNotCallSourceFunction) {

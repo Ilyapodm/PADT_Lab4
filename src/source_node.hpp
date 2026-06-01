@@ -11,9 +11,16 @@
 template <typename T>
 class SourceNode : public Node<T> {
 public:
-    SourceNode(const Generator<T>& generator) : generator_(generator.clone()), cache_(), length_(generator.length()) {}
+    SourceNode(const Generator<T>& generator) : 
+    generator_(generator.clone()), 
+    cache_(), 
+    length_(generator.length()) 
+    {}
 
-    SourceNode(const SourceNode<T>& other) : generator_(other.generator_->clone()), cache_(other.cache_), length_(other.length_) {}
+    SourceNode(const SourceNode<T>& other) : 
+    generator_(other.generator_->clone()), 
+    cache_(other.cache_), 
+    length_(other.length_) {}
 
     SourceNode<T>& operator=(const SourceNode<T>& other) {
         if (this == &other) {

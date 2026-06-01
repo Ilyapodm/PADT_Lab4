@@ -1,7 +1,9 @@
 #pragma once
 
-#include "node.hpp"
 #include <stdexcept>
+
+#include "node.hpp"
+#include "ordinal.hpp"
 
 template <typename T>
 class SetNode : public Node<T> {
@@ -12,7 +14,7 @@ public:
         index_(index)
     {
         if (index >= source.length())
-            throw std::invalid_argument("SetNode index out of range");
+            throw std::out_of_range("SetNode index out of range");
         
         source_ = source.clone();
     }

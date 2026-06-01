@@ -11,8 +11,7 @@ public:
     SubsequenceNode(const Node<T>& source, const Ordinal& start, const Ordinal& end_exclusive) : 
         source_(nullptr),
         start_(start),
-        end_exclusive_(end_exclusive),
-        length_(Ordinal(0))
+        end_exclusive_(end_exclusive)
     {
         if (start > end_exclusive || end_exclusive > source.length())
             throw std::invalid_argument("start index is bigger than end index");
