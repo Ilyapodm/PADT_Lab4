@@ -126,3 +126,66 @@ TEST(OrdinalTest, SubtractPrefixResultSatisfiesPrefixPlusResultEqualsCurrent) {
 
     EXPECT_EQ(prefix + local, current);
 }
+
+TEST(OrdinalGetLastTest, FiniteLengthHasLastIndex) {
+    Ordinal length(5);
+
+    Ordinal last = length.get_last_index();
+
+    EXPECT_EQ(last.get_omega_coeff(), 0);
+    EXPECT_EQ(last.get_finite_part(), 4);
+}
+
+TEST(OrdinalGetLastTest, OneElementLengthLastIndexIsZero) {
+    Ordinal length(1);
+
+    Ordinal last = length.get_last_index();
+
+    EXPECT_EQ(last.get_omega_coeff(), 0);
+    EXPECT_EQ(last.get_finite_part(), 0);
+}
+
+TEST(OrdinalGetLastTest, ZeroLengthDoesNotHaveLastIndex) {
+    Ordinal length(0);
+
+    EXPECT_THROW(length.get_last_index(), std::logic_error);
+}
+
+TEST(OrdinalGetLastTest, OmegaDoesNotHaveLastIndex) {
+    Ordinal length(1, 0); // omega
+
+    EXPECT_THROW(length.get_last_index(), std::logic_error);
+}
+
+TEST(OrdinalGetLastTest, OmegaPlusFiniteTailHasLastIndex) {
+    Ordinal length(1, 3); // omega + 3
+
+    Ordinal last = length.get_last_index();
+
+    EXPECT_EQ(last.get_omega_coeff(), 1);
+    EXPECT_EQ(last.get_finite_part(), 2);
+}
+
+TEST(OrdinalGetLastTest, OmegaPlusOneLastIndexIsOmega) {
+    Ordinal length(1, 1); // omega + 1
+
+    Ordinal last = length.get_last_index();
+
+    EXPECT_EQ(last.get_omega_coeff(), 1);
+    EXPECT_EQ(last.get_finite_part(), 0);
+}
+
+TEST(OrdinalGetLastTest, OmegaTimesTwoDoesNotHaveLastIndex) {
+    Ordinal length(2, 0); // ω * 2
+
+    EXPECT_THROW(length.get_last_index(), std::logic_error);
+}
+
+TEST(OrdinalGetLastTest, OmegaTimesTwoPlusFiniteTailHasLastIndex) {
+    Ordinal length(2, 4); // omega * 2 + 4
+
+    Ordinal last = length.get_last_index();
+
+    EXPECT_EQ(last.get_omega_coeff(), 2);
+    EXPECT_EQ(last.get_finite_part(), 3);
+}

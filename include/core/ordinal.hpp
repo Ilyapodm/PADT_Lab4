@@ -22,8 +22,11 @@ public:
         return omega_coeff_ == 0;
     }
 
-    bool has_end() const {
-        return !(omega_coeff_ > 0 && finite_part_ == 0);
+    // returns the last index of the sequence with *this length
+    Ordinal get_last_index() const {
+        if (finite_part_ <= 0)
+            throw std::logic_error("Ordinal doen't have the end");
+        return Ordinal(omega_coeff_, finite_part_ - 1);
     }
 
     std::size_t get_omega_coeff() const {
