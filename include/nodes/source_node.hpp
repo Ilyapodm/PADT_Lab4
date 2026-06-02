@@ -46,6 +46,10 @@ public:
         return length_;
     }
 
+    std::size_t materialized_count() const override {
+        return cache_.get_size();
+    }
+
     SourceNode<T>* clone() const override {
         return new SourceNode<T>(*this);
     }

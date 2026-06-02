@@ -50,6 +50,11 @@ public:
         return length_;
     }
 
+    // inserted value is not a cache actually!!
+    std::size_t materialized_count() const override {
+        return source_->materialized_count();
+    }
+
     InsertAtNode<T>* clone() const override {
         return new InsertAtNode<T>(*this);
     }

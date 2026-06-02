@@ -10,6 +10,9 @@ public:
 
     virtual const Ordinal& length() const = 0;
 
+    // the number of values stored in caches inside a given Node tree
+    virtual std::size_t materialized_count() const = 0;  
+
     // "Public interface with all checks is not virtual, the realization is specific and thus virtual"
     const T& value_at(const Ordinal& index) {
         if (index >= length()) 

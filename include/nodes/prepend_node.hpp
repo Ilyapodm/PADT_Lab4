@@ -39,6 +39,11 @@ public:
         return length_;
     }
 
+    // prepended value is not a cache actually!!
+    std::size_t materialized_count() const override {
+        return source_->materialized_count();
+    }
+
     PrependNode* clone() const override {
         return new PrependNode(*this);
     }

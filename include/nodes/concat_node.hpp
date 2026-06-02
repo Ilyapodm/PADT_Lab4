@@ -61,6 +61,10 @@ public:
         return length_;
     }
 
+    std::size_t materialized_count() const override {
+        return left_->materialized_count() + right_->materialized_count();
+    }
+
     ConcatNode<T>* clone() const override {
         return new ConcatNode<T>(*this);
     }

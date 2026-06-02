@@ -49,6 +49,12 @@ public:
         return length_;
     }
 
+    // cache may be out the bounds, but it's been calculated and it is in storage in the source node now,
+    // even if we don't have access to it
+    std::size_t materialized_count() const override {
+        return source_->materialized_count();
+    }
+
     RemoveAtNode* clone() const override {
         return new RemoveAtNode(*this);
     }

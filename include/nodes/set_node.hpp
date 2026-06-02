@@ -43,6 +43,11 @@ public:
         return source_->length();
     }
 
+    // set value is not a cache actually!!
+    std::size_t materialized_count() const override {
+        return source_->materialized_count();
+    }
+
     SetNode<T>* clone() const override {
         return new SetNode<T>(*this);
     }
