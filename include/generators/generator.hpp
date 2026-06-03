@@ -12,7 +12,8 @@ public:
     virtual bool has_next() const = 0;
     virtual T get_next() = 0;
 
-    virtual Ordinal length() const = 0;
+    // do not const Ordinal&, not to create extra field to Gens (sometimes there are temporary objects)
+    virtual Ordinal length() const = 0;  
 
     virtual Option<T> try_get_next() {
         if (!has_next())

@@ -19,7 +19,7 @@ public:
         source_ = source.clone();
 
         if (index_.get_omega_coeff() == source_->length().get_omega_coeff())
-            length_ = Ordinal(source_->length().get_omega_coeff(), source_->length().get_finite_part() + 1);  // just increase
+            length_ = source_->length() + Ordinal(1);  // just increase 
         else
             length_ = source_->length();
     }

@@ -65,8 +65,7 @@ protected:
             return source_->value_at(index);
 
         if (index.get_omega_coeff() == index_.get_omega_coeff()) {
-            Ordinal source_index(index.get_omega_coeff(), index.get_finite_part() + 1);
-            return source_->value_at(source_index);
+            return source_->value_at(index + Ordinal(1));
         }
 
         return source_->value_at(index);  // index's element is in the next infinite part, no correction

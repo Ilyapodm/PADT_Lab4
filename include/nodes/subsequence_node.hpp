@@ -13,15 +13,15 @@ public:
         start_(start),
         end_exclusive_(end_exclusive)
     {
-        if (start > end_exclusive || end_exclusive > source.length())
+        if (start > end_exclusive)  // if start == end exclusive -> length = 0 
             throw std::invalid_argument("start index is bigger than end index");
 
         if (end_exclusive > source.length())
             throw std::invalid_argument("end index is biggeer than the length of the source");
     
 
-    length_ = end_exclusive.subtract_prefix(start);
-    source_ = source.clone();
+        length_ = end_exclusive.subtract_prefix(start);
+        source_ = source.clone();
     }
 
     SubsequenceNode(const SubsequenceNode& other) : SubsequenceNode(*other.source_, other.start_, other.end_exclusive_) {}

@@ -9,11 +9,12 @@
 #include "adt_lab_2/ienumerator.hpp"
 #include "core/ordinal.hpp"
 
+
+// make a snapshot of any finite Sequence<T> into an owned MutableArraySequence<T>
 template <typename T>
 class SequenceGenerator : public Generator<T> {
 public:
     explicit SequenceGenerator(const Sequence<T>& source) {
-        // make a snapshot of any finite Sequence<T> into an owned MutableArraySequence<T>
         // enumerator allows not to waste time through 'get',
         // PERF: but we don't have enough access to dynamic array to allocate enough memory at once, and not doing: 'allocate more -> copy -> delete'
         // as a decision: TODO: add 'reserve' to array_seq
@@ -48,7 +49,7 @@ public:
     }
 
     Ordinal length() const override {
-        return Ordinal(source_.get_size());
+        return Ordinal(source_.get_size());  
     }
 
     SequenceGenerator<T>* clone() const override {
