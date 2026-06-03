@@ -6,7 +6,7 @@ public:
     // constructors and operator=
     DynamicArray();
     DynamicArray(int size);
-    DynamicArray(T* items, int size);
+    DynamicArray(const T* items, int size);
     DynamicArray(const DynamicArray<T> &other);
     ~DynamicArray();
 

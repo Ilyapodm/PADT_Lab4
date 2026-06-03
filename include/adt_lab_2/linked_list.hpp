@@ -13,7 +13,7 @@ private:  // here for enumerator access
 public:
     // constructors 
     LinkedList();
-    LinkedList(T *items, int size);
+    LinkedList(const T *items, int size);
     LinkedList(const LinkedList<T> &other);
     ~LinkedList();
 

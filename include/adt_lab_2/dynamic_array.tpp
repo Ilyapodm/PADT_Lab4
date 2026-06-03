@@ -21,7 +21,7 @@ DynamicArray<T>::DynamicArray(int size) : size{size}, capacity{size} {
 }
 
 template <typename T>
-DynamicArray<T>::DynamicArray(T *items, int size) : size{size}, capacity{size} {
+DynamicArray<T>::DynamicArray(const T *items, int size) : size{size}, capacity{size} {
     if (size < 0)
         throw std::invalid_argument("DynamicArray<T>::DynamicArray: size cannot be negative");
 

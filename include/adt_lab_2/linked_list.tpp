@@ -11,7 +11,7 @@ template <typename T>
 LinkedList<T>::LinkedList() : head{nullptr}, tail{nullptr}, length{0} {}
 
 template <typename T>
-LinkedList<T>::LinkedList(T *items, int size) : head{nullptr}, tail{nullptr}, length{size} {
+LinkedList<T>::LinkedList(const T *items, int size) : head{nullptr}, tail{nullptr}, length{size} {
     if (size < 0)
         throw std::invalid_argument("LinkedList: length cannot be negative");
 

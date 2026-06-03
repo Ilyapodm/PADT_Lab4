@@ -16,7 +16,7 @@ ListSequence<T>::ListSequence() {
 }
 
 template <typename T>
-ListSequence<T>::ListSequence(T *items, int size) {
+ListSequence<T>::ListSequence(const T *items, int size) {
     list = new LinkedList<T>(items, size);
 }
 

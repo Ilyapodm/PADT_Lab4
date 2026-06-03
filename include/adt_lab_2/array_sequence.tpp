@@ -16,7 +16,7 @@ ArraySequence<T>::ArraySequence() {
 }
 
 template <typename T>
-ArraySequence<T>::ArraySequence(T *items, int size) {
+ArraySequence<T>::ArraySequence(const T *items, int size) {
     array = new DynamicArray<T>(items, size); 
 }
 

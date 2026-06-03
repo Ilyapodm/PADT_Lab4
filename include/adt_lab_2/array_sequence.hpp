@@ -8,7 +8,7 @@ class ArraySequence : public Sequence<T> {
 public:
     // constructors
     ArraySequence();
-    ArraySequence(T *items, int size);  // copy from given array
+    ArraySequence(const T *items, int size);  // copy from given array
     ArraySequence(const DynamicArray<T> &array);
     ArraySequence(const ArraySequence<T> &other);
     ~ArraySequence() { delete array; }
@@ -78,7 +78,7 @@ template <typename T>
 class MutableArraySequence : public ArraySequence<T> {
 public:
     MutableArraySequence() : ArraySequence<T>() {}
-    MutableArraySequence(T *items, int size) : ArraySequence<T>(items, size) {}
+    MutableArraySequence(const T *items, int size) : ArraySequence<T>(items, size) {}
     MutableArraySequence(const DynamicArray<T> &array) : ArraySequence<T>(array) {}
     MutableArraySequence(const ArraySequence<T> &other) : ArraySequence<T>(other) {}
     MutableArraySequence& operator=(const MutableArraySequence &other) {

@@ -9,7 +9,7 @@ class ListSequence : public Sequence<T> {
 public:
     // constructors
     ListSequence();
-    ListSequence(T *items, int size);  //copy from given list
+    ListSequence(const T *items, int size);  //copy from given list
     ListSequence (const LinkedList<T> &list);
     ListSequence(const ListSequence<T> &other); 
     ~ListSequence() { delete list; }
