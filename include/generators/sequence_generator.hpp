@@ -34,6 +34,8 @@ public:
         delete iter;
     }
 
+    SequenceGenerator(const T* items, int count) : source_(make_source(items, count)) {}
+
     explicit SequenceGenerator(const MutableArraySequence<T>& other) : source_(other) {}
 
     bool has_next() const override {
@@ -59,4 +61,21 @@ public:
 private:
     MutableArraySequence<T> source_;  // copies the entered sequence
     std::size_t index_ = 0;
+
+    // helper to initialize, not transform already existing 'source_'
+    static MutableArraySequence<T> make_source(const T* items, int count) {
+        if (count < 0) {
+            throw std::invalid_argument("SequenceGenerator: size cannot be negative");
+        }
+
+        if (items == nullptr && count > 0) {
+            throw std::invalid_argument("SequenceGenerator: items is nullptr");
+        }
+
+        if (count == 0) {
+            return MutableArraySequence<T>();
+        }
+
+        return MutableArraySequence<T>(items, count);
+    }
 };
