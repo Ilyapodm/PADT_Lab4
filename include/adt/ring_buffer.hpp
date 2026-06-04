@@ -71,7 +71,7 @@ public:
     // replace the oldest value to the new one
     void push(const T& new_value) {
         if (size_ == 0)
-            throw std::out_of_range("Out of range: zero size buffer");
+            throw std::out_of_range("RingBuffer<T>::get: zero size buffer");
 
         data_[start_] = new_value;
         start_ = (start_ + 1) % size_;
@@ -87,6 +87,14 @@ public:
 
     std::size_t size() const {
         return size_;
+    }
+
+    void copy_to(T* out) const {
+        if (out == nullptr && size_ > 0)
+            throw std::invalid_argument("RingBuffer<T>::copy_to: nullptr out");
+
+        for (std::size_t i = 0; i < size_; i++) 
+            out[i] = get(i);
     }
 
 private:
