@@ -62,6 +62,10 @@ public:
         root_node_ = new SourceNode<T>(RecurrenceGenerator<T>(generator_rule, initial_items, count, length));
     }
 
+    LazySequence(std::function<T(const T*, std::size_t)> generator_rule, const T* initial_items, std::size_t count,  const Ordinal& length) {
+        root_node_ = new SourceNode<T>(RecurrenceGenerator<T>(generator_rule, initial_items, count, length));
+    }
+
     LazySequence(const LazySequence<T>& other) {
         root_node_ = other.root_node_->clone();
     }
