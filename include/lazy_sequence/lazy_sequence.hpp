@@ -223,7 +223,7 @@ public:
     }
 
     IEnumerator<T>* get_enumerator() const override {
-        throw std::logic_error("Not implemented");
+        return new LazySequenceEnumerator(root_node_);
     }
 
 private:
@@ -234,4 +234,40 @@ private:
             throw std::invalid_argument("LazySequence node is nullptr");
         root_node_ = node;
     }
+
+        class LazySequenceEnumerator : public IEnumerator<T> {
+    public:
+        explicit LazySequenceEnumerator(const Node<T>* root_node) : root_node_(root_node), index_(-1) {
+            if (!root_node_) 
+                throw std::invalid_argument("LazySequenceEnumerator: root_node is nullptr");
+        }
+
+        bool move_next() override {
+            ++index_;
+
+            return Ordinal(index_) < root_node_->length();
+        }
+
+        const T& get_current() const override {
+            if (index_ < 0) {
+                throw std::out_of_range("LazySequenceEnumerator::get_current: called before move_next");
+            }
+
+            Ordinal ordinal_index(index_);
+
+            if (!(ordinal_index < root_node_->length())) {
+                throw std::out_of_range("LazySequenceEnumerator::get_current: called after end");
+            }
+
+            return root_node_->value_at(ordinal_index);
+        }
+
+        void reset() override {
+            index_ = -1;
+        }
+
+    private:
+        const Node<T>* root_node_;
+        long long index_ = -1;
+    };
 };
