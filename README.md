@@ -303,3 +303,65 @@ prepended[i] = source[i - 1], если i конечный и i > 0
 ```
 
 Для трансфинитных индексов сдвиг не применяется: `prepended[ω + n] = source[ω + n]`. Это сохраняет корректную ординальную структуру последовательности.
+
+## LazySequence
+
+`LazySequence<T>` — фасад над деревом ленивых `Node<T>`, представляющий конечную или трансфинитную последовательность.
+
+`LazySequence` не является потоком и не выполняет последовательное чтение. У него нет `get_next()`: доступ к элементам происходит только по индексу через корневой узел.
+
+Основная схема:
+
+```text
+Generator<T> -> SourceNode<T> -> operation Node<T> -> LazySequence<T>
+```
+
+`LazySequence<T>` хранит:
+
+```text
+Node<T>* root_node_
+```
+
+и делегирует ему:
+
+```text
+get(index)              -> root_node_->value_at(Ordinal(index))
+get_at(ordinal_index)   -> root_node_->value_at(ordinal_index)
+get_ordinal_length()    -> root_node_->length()
+get_materialized_count()-> root_node_->materialized_count()
+```
+
+Поддерживаемые источники:
+
+* пустая последовательность;
+* массив `T*`;
+* обычный `Sequence<T>`;
+* `FunctionGenerator<T>`;
+* `RecurrenceGenerator<T>` через `RingBuffer<T>`;
+* `RecurrenceGenerator<T>` через массив последних значений.
+
+Операции `append`, `prepend`, `set`, `insert_at`, `remove_at`, `concat`, `subsequence` не изменяют исходную последовательность. Вместо этого они создают новую `LazySequence<T>` с новым корневым операционным узлом:
+
+```text
+append      -> AppendNode
+prepend     -> PrependNode
+set         -> SetNode
+insert_at   -> InsertAtNode
+remove_at   -> RemoveAtNode
+concat      -> ConcatNode
+subsequence -> SubsequenceNode
+```
+
+Каждая операция сохраняет ленивость: результат не материализуется целиком, а индексный запрос маршрутизируется внутри дерева узлов.
+
+Копирование `LazySequence` выполняется через `Node::clone()`, поэтому производные последовательности независимы от исходных и сохраняют уже накопленный кэш.
+
+Для конечных последовательностей доступны обычные `int`-индексы. Для трансфинитных случаев используется `Ordinal`, например:
+
+```text
+0
+5
+ω
+ω + 3
+ω * 2 + 1
+```
