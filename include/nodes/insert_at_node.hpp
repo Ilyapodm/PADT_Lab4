@@ -60,7 +60,7 @@ public:
     }
 
 protected:
-    const T& value_at_impl(const Ordinal& index) override {
+    const T& value_at_impl(const Ordinal& index) const override {
         if (index < index_)
             return source_->value_at(index);
 

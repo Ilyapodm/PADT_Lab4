@@ -49,7 +49,7 @@ public:
     }
 
 protected:
-    const T& value_at_impl(const Ordinal& index) override {
+    const T& value_at_impl(const Ordinal& index) const override {
         if (index == Ordinal()) 
             return value_;
         if (index.is_finite()) 

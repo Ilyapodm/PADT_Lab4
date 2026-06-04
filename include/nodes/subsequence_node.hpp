@@ -60,7 +60,7 @@ public:
     }
 
 protected:
-    const T& value_at_impl(const Ordinal& local_index) override {
+    const T& value_at_impl(const Ordinal& local_index) const override {
         Ordinal source_index = start_ + local_index;
         return source_->value_at(source_index);
     }

@@ -55,7 +55,7 @@ public:
     }
 
 protected:
-    const T& value_at_impl(const Ordinal& index) override {
+    const T& value_at_impl(const Ordinal& index) const override {
         if (!index.is_finite()) {
             throw std::logic_error("SourceNode cannot materialize transfinite local index");
         }
@@ -75,7 +75,7 @@ protected:
 
 private:
     // use pointer because of the polymorphism (don't know the exact type of Gen)
-    Generator<T>* generator_;  // generator_'s state is right after the last element in cache_
-    MutableArraySequence<T> cache_;  // use as field, less pain with memory
+    mutable Generator<T>* generator_;  // generator_'s state is right after the last element in cache_
+    mutable MutableArraySequence<T> cache_;  // use as field, less pain with memory
     Ordinal length_;
 };

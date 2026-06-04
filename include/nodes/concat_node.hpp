@@ -70,7 +70,7 @@ public:
     }
 
 protected:
-    const T& value_at_impl(const Ordinal& index) override {
+    const T& value_at_impl(const Ordinal& index) const override {
         const Ordinal& left_length = left_->length();
         if (index < left_length) 
             return left_->value_at(index);
