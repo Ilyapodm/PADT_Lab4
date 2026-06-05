@@ -4,9 +4,21 @@
 #include "generators/function_generator.hpp"
 #include "core/ordinal.hpp"
 
+static int identity_function(std::size_t index) {
+    return static_cast<int>(index);
+}
+
+static int plus_10_function(std::size_t index) {
+    return static_cast<int>(index + 10);
+}
+
+static int square_function(std::size_t index) {
+    return static_cast<int>(index * index);
+}
+
 TEST(SourceNodeTest, ReturnsLength) {
     FunctionGenerator<int> gen(
-        [](std::size_t i) { return static_cast<int>(i); },
+        identity_function,
         Ordinal(5)
     );
 
@@ -17,7 +29,7 @@ TEST(SourceNodeTest, ReturnsLength) {
 
 TEST(SourceNodeTest, MaterializesValueByIndex) {
     FunctionGenerator<int> gen(
-        [](std::size_t i) { return static_cast<int>(i * i); },
+        square_function,
         Ordinal(10)
     );
 
@@ -76,7 +88,7 @@ TEST(SourceNodeTest, ExtendsCacheOnlyWhenNeeded) {
 
 TEST(SourceNodeTest, WorksWithOmegaLength) {
     FunctionGenerator<int> gen(
-        [](std::size_t i) { return static_cast<int>(i + 10); },
+        plus_10_function,
         Ordinal::omega() // omega
     );
 
@@ -89,7 +101,7 @@ TEST(SourceNodeTest, WorksWithOmegaLength) {
 
 TEST(SourceNodeTest, ThrowsWhenIndexOutOfRange) {
     FunctionGenerator<int> gen(
-        [](std::size_t i) { return static_cast<int>(i); },
+        identity_function,
         Ordinal(3)
     );
 
@@ -101,7 +113,7 @@ TEST(SourceNodeTest, ThrowsWhenIndexOutOfRange) {
 
 TEST(SourceNodeTest, ThrowsOnTransfiniteLocalIndex) {
     FunctionGenerator<int> gen(
-        [](std::size_t i) { return static_cast<int>(i); },
+        identity_function,
         Ordinal(1, 0) // omega
     );
 

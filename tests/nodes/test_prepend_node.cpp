@@ -19,6 +19,13 @@ static int linear_value(std::size_t index) {
     return static_cast<int>(100 + index * 10);
 }
 
+static int identity_function(std::size_t index) {
+    return static_cast<int>(index);
+}
+
+static int plus_1000_function(std::size_t index) {
+    return static_cast<int>(index + 1000);
+}
 
 TEST(PrependNodeTest, FiniteLengthIncreasesByOne) {
     FunctionGenerator<int> gen(linear_value, Ordinal(5));
@@ -203,12 +210,7 @@ TEST(PrependNodeTest, AssignmentOperatorCopiesSourceValueAndLength) {
     PrependNode<int> first(source1, 999);
     // first = [999, 100, 110, 120, 130, 140]
 
-    FunctionGenerator<int> gen2(
-        [](std::size_t index) {
-            return static_cast<int>(1000 + index);
-        },
-        Ordinal(3)
-    );
+    FunctionGenerator<int> gen2(plus_1000_function, Ordinal(3));
     SourceNode<int> source2(gen2);
 
     PrependNode<int> second(source2, -1);
@@ -225,19 +227,9 @@ TEST(PrependNodeTest, AssignmentOperatorCopiesSourceValueAndLength) {
 }
 
 TEST(PrependNodeTest, TransfiniteIndexesAreNotShifted) {
-    FunctionGenerator<int> left_gen(
-        [](std::size_t index) {
-            return static_cast<int>(index);
-        },
-        Ordinal::omega()
-    );
+    FunctionGenerator<int> left_gen(identity_function, Ordinal::omega());
 
-    FunctionGenerator<int> right_gen(
-        [](std::size_t index) {
-            return static_cast<int>(1000 + index);
-        },
-        Ordinal(3)
-    );
+    FunctionGenerator<int> right_gen(plus_1000_function, Ordinal(3));
 
     SourceNode<int> left(left_gen);
     SourceNode<int> right(right_gen);

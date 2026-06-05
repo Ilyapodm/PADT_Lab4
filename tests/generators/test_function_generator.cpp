@@ -5,12 +5,20 @@
 #include "generators/function_generator.hpp"
 #include "core/ordinal.hpp"
 
+static int square_function(std::size_t index) {
+    return static_cast<int>(index * index);
+}
+
+static int identity_function(std::size_t index) {
+    return static_cast<int>(index);
+}
+
+static int multiply_by_ten_function(std::size_t index) {
+    return static_cast<int>(index * 10);
+}
+
 TEST(FunctionGeneratorTest, FiniteGeneratorProducesValuesInOrder) {
-    FunctionGenerator<int> gen(
-        [](std::size_t index) {
-            return static_cast<int>(index * index);
-        },
-        Ordinal(5)
+    FunctionGenerator<int> gen(square_function, Ordinal(5)
     );
 
     EXPECT_TRUE(gen.has_next());
@@ -33,12 +41,7 @@ TEST(FunctionGeneratorTest, FiniteGeneratorProducesValuesInOrder) {
 }
 
 TEST(FunctionGeneratorTest, ZeroLengthGeneratorIsImmediatelyExhausted) {
-    FunctionGenerator<int> gen(
-        [](std::size_t index) {
-            return static_cast<int>(index);
-        },
-        Ordinal(0)
-    );
+    FunctionGenerator<int> gen(identity_function, Ordinal(0));
 
     EXPECT_FALSE(gen.has_next());
     EXPECT_THROW(gen.get_next(), std::out_of_range);
@@ -57,87 +60,47 @@ TEST(FunctionGeneratorTest, ConstructorThrowsOnEmptyFunction) {
 
 TEST(FunctionGeneratorTest, ConstructorAcceptsFiniteLength) {
     EXPECT_NO_THROW(
-        FunctionGenerator<int> gen(
-            [](std::size_t index) {
-                return static_cast<int>(index);
-            },
-            Ordinal(10)
-        )
+        FunctionGenerator<int> gen(identity_function, Ordinal(10))
     );
 }
 
 TEST(FunctionGeneratorTest, ConstructorAcceptsOmegaLength) {
     EXPECT_NO_THROW(
-        FunctionGenerator<int> gen(
-            [](std::size_t index) {
-                return static_cast<int>(index);
-            },
-            Ordinal::omega()
-        )
+        FunctionGenerator<int> gen(identity_function, Ordinal::omega())
     );
 }
 
 TEST(FunctionGeneratorTest, ConstructorRejectsLengthGreaterThanOmega) {
     EXPECT_THROW(
-        FunctionGenerator<int> gen(
-            [](std::size_t index) {
-                return static_cast<int>(index);
-            },
-            Ordinal(1, 1)
-        ),
+        FunctionGenerator<int> gen(identity_function, Ordinal(1, 1)),
         std::invalid_argument
     );
 
     EXPECT_THROW(
-        FunctionGenerator<int> gen(
-            [](std::size_t index) {
-                return static_cast<int>(index);
-            },
-            Ordinal(2, 0)
-        ),
+        FunctionGenerator<int> gen(identity_function, Ordinal(2, 0)),
         std::invalid_argument
     );
 
     EXPECT_THROW(
-        FunctionGenerator<int> gen(
-            [](std::size_t index) {
-                return static_cast<int>(index);
-            },
-            Ordinal(2, 5)
-        ),
+        FunctionGenerator<int> gen(identity_function, Ordinal(2, 5)),
         std::invalid_argument
     );
 }
 
 TEST(FunctionGeneratorTest, LengthReturnsConstructorLength) {
-    FunctionGenerator<int> finite_gen(
-        [](std::size_t index) {
-            return static_cast<int>(index);
-        },
-        Ordinal(42)
-    );
+    FunctionGenerator<int> finite_gen(identity_function, Ordinal(42));
 
     EXPECT_EQ(finite_gen.length().get_omega_coeff(), 0);
     EXPECT_EQ(finite_gen.length().get_finite_part(), 42);
 
-    FunctionGenerator<int> infinite_gen(
-        [](std::size_t index) {
-            return static_cast<int>(index);
-        },
-        Ordinal::omega()
-    );
+    FunctionGenerator<int> infinite_gen(identity_function, Ordinal::omega());
 
     EXPECT_EQ(infinite_gen.length().get_omega_coeff(), 1);
     EXPECT_EQ(infinite_gen.length().get_finite_part(), 0);
 }
 
 TEST(FunctionGeneratorTest, CloneCopiesCurrentState) {
-    FunctionGenerator<int> gen(
-        [](std::size_t index) {
-            return static_cast<int>(index * 10);
-        },
-        Ordinal(10)
-    );
+    FunctionGenerator<int> gen(multiply_by_ten_function, Ordinal(10));
 
     EXPECT_EQ(gen.get_next(), 0);
     EXPECT_EQ(gen.get_next(), 10);

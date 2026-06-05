@@ -176,7 +176,7 @@ TEST(OrdinalGetLastTest, OmegaPlusOneLastIndexIsOmega) {
 }
 
 TEST(OrdinalGetLastTest, OmegaTimesTwoDoesNotHaveLastIndex) {
-    Ordinal length(2, 0); // ω * 2
+    Ordinal length(2, 0); // omega * 2
 
     EXPECT_THROW(length.get_last_index(), std::logic_error);
 }

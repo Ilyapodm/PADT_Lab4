@@ -22,16 +22,35 @@ static void ExpectOrdinalEq(const Ordinal& value,
     EXPECT_EQ(value.get_finite_part(), finite_part);
 }
 
+static int identity_function(std::size_t index) {
+    return static_cast<int>(index);
+}
+
+static int plus_10_function(std::size_t index) {
+    return static_cast<int>(index + 10);
+}
+
+static int plus_50_function(std::size_t index) {
+    return static_cast<int>(index + 50);
+}
+
+static int plus_100_function(std::size_t index) {
+    return static_cast<int>(index + 100);
+}
+
+static int plus_1000_function(std::size_t index) {
+    return static_cast<int>(index + 1000);
+}
 
 // 1. finite + finite
 TEST(ConcatNodeTest, FiniteFiniteComputesCorrectLength) {
     FunctionGenerator<int> left_gen(
-        [](std::size_t i) { return static_cast<int>(10 + i); },
+        plus_10_function,
         Ordinal(3)
     );
 
     FunctionGenerator<int> right_gen(
-        [](std::size_t i) { return static_cast<int>(100 + i); },
+        plus_100_function,
         Ordinal(2)
     );
 
@@ -45,12 +64,12 @@ TEST(ConcatNodeTest, FiniteFiniteComputesCorrectLength) {
 
 TEST(ConcatNodeTest, FiniteFiniteReturnsValuesFromLeftAndRight) {
     FunctionGenerator<int> left_gen(
-        [](std::size_t i) { return static_cast<int>(10 + i); },
+        plus_10_function,
         Ordinal(3)
     );
 
     FunctionGenerator<int> right_gen(
-        [](std::size_t i) { return static_cast<int>(100 + i); },
+        plus_100_function,
         Ordinal(2)
     );
 
@@ -69,12 +88,12 @@ TEST(ConcatNodeTest, FiniteFiniteReturnsValuesFromLeftAndRight) {
 
 TEST(ConcatNodeTest, FiniteFiniteThrowsWhenIndexEqualsLength) {
     FunctionGenerator<int> left_gen(
-        [](std::size_t i) { return static_cast<int>(i); },
+        identity_function,
         Ordinal(3)
     );
 
     FunctionGenerator<int> right_gen(
-        [](std::size_t i) { return static_cast<int>(i); },
+        identity_function,
         Ordinal(2)
     );
 
@@ -88,12 +107,12 @@ TEST(ConcatNodeTest, FiniteFiniteThrowsWhenIndexEqualsLength) {
 
 TEST(ConcatNodeTest, FiniteFiniteThrowsWhenIndexGreaterThanLength) {
     FunctionGenerator<int> left_gen(
-        [](std::size_t i) { return static_cast<int>(i); },
+        identity_function,
         Ordinal(3)
     );
 
     FunctionGenerator<int> right_gen(
-        [](std::size_t i) { return static_cast<int>(i); },
+        identity_function,
         Ordinal(2)
     );
 
@@ -108,12 +127,12 @@ TEST(ConcatNodeTest, FiniteFiniteThrowsWhenIndexGreaterThanLength) {
 // 2. empty cases
 TEST(ConcatNodeTest, EmptyLeftBehavesLikeRight) {
     FunctionGenerator<int> empty_gen(
-        [](std::size_t i) { return static_cast<int>(i); },
+        identity_function,
         Ordinal(0)
     );
 
     FunctionGenerator<int> right_gen(
-        [](std::size_t i) { return static_cast<int>(50 + i); },
+        plus_50_function,
         Ordinal(3)
     );
 
@@ -133,12 +152,12 @@ TEST(ConcatNodeTest, EmptyLeftBehavesLikeRight) {
 
 TEST(ConcatNodeTest, EmptyRightBehavesLikeLeft) {
     FunctionGenerator<int> left_gen(
-        [](std::size_t i) { return static_cast<int>(10 + i); },
+        plus_10_function,
         Ordinal(3)
     );
 
     FunctionGenerator<int> empty_gen(
-        [](std::size_t i) { return static_cast<int>(i); },
+        identity_function,
         Ordinal(0)
     );
 
@@ -159,12 +178,12 @@ TEST(ConcatNodeTest, EmptyRightBehavesLikeLeft) {
 // 3. finite + omega
 TEST(ConcatNodeTest, FiniteOmegaLengthIsOmega) {
     FunctionGenerator<int> left_gen(
-        [](std::size_t i) { return static_cast<int>(10 + i); },
+        plus_10_function,
         Ordinal(2)
     );
 
     FunctionGenerator<int> right_gen(
-        [](std::size_t i) { return static_cast<int>(1000 + i); },
+        plus_1000_function,
         Omega()
     );
 
@@ -251,12 +270,12 @@ TEST(ConcatNodeTest, FiniteOmegaRoutesFarFiniteIndexToRightWithoutTouchingMoreLe
 // 4. omega + finite
 TEST(ConcatNodeTest, OmegaFiniteLengthIsOmegaPlusFinite) {
     FunctionGenerator<int> left_gen(
-        [](std::size_t i) { return static_cast<int>(i); },
+        identity_function,
         Omega()
     );
 
     FunctionGenerator<int> right_gen(
-        [](std::size_t i) { return static_cast<int>(100 + i); },
+        plus_100_function,
         Ordinal(3)
     );
 
@@ -337,12 +356,12 @@ TEST(ConcatNodeTest, OmegaFiniteTransfiniteIndexGoesToRight) {
 
 TEST(ConcatNodeTest, OmegaFiniteThrowsAtOmegaPlusFiniteLength) {
     FunctionGenerator<int> left_gen(
-        [](std::size_t i) { return static_cast<int>(i); },
+        identity_function,
         Omega()
     );
 
     FunctionGenerator<int> right_gen(
-        [](std::size_t i) { return static_cast<int>(100 + i); },
+        plus_100_function,
         Ordinal(3)
     );
 
@@ -358,12 +377,12 @@ TEST(ConcatNodeTest, OmegaFiniteThrowsAtOmegaPlusFiniteLength) {
 // 5. omega + omega
 TEST(ConcatNodeTest, OmegaOmegaLengthIsOmegaTimesTwo) {
     FunctionGenerator<int> left_gen(
-        [](std::size_t i) { return static_cast<int>(i); },
+        identity_function,
         Omega()
     );
 
     FunctionGenerator<int> right_gen(
-        [](std::size_t i) { return static_cast<int>(1000 + i); },
+        plus_1000_function,
         Omega()
     );
 
@@ -410,6 +429,7 @@ TEST(ConcatNodeTest, OmegaOmegaIndexGoesToRightWithoutTouchingLeft) {
     int left_calls = 0;
     int right_calls = 0;
 
+    // lambda is accepted, because have to count the calls
     FunctionGenerator<int> left_gen(
         [&left_calls](std::size_t i) {
             ++left_calls;
@@ -443,12 +463,12 @@ TEST(ConcatNodeTest, OmegaOmegaIndexGoesToRightWithoutTouchingLeft) {
 
 TEST(ConcatNodeTest, OmegaOmegaRejectsIndexOmegaTimesTwo) {
     FunctionGenerator<int> left_gen(
-        [](std::size_t i) { return static_cast<int>(i); },
+        identity_function,
         Omega()
     );
 
     FunctionGenerator<int> right_gen(
-        [](std::size_t i) { return static_cast<int>(1000 + i); },
+        plus_1000_function,
         Omega()
     );
 
@@ -586,7 +606,7 @@ TEST(ConcatNodeTest, CloneHasIndependentGeneratorStateAfterCopiedCache) {
     int right_calls = 0;
 
     FunctionGenerator<int> left_gen(
-        [](std::size_t i) { return static_cast<int>(10 + i); },
+        plus_10_function,
         Ordinal(3)
     );
 
@@ -628,7 +648,7 @@ TEST(ConcatNodeTest, AssignmentCopiesStructureAndValues) {
     int right_calls = 0;
 
     FunctionGenerator<int> left_gen(
-        [](std::size_t i) { return static_cast<int>(10 + i); },
+        plus_10_function,
         Ordinal(3)
     );
 
@@ -679,12 +699,12 @@ TEST(ConcatNodeTest, AssignmentCopiesStructureAndValues) {
 
 TEST(ConcatNodeTest, SelfAssignmentKeepsObjectValid) {
     FunctionGenerator<int> left_gen(
-        [](std::size_t i) { return static_cast<int>(10 + i); },
+        plus_10_function,
         Ordinal(3)
     );
 
     FunctionGenerator<int> right_gen(
-        [](std::size_t i) { return static_cast<int>(100 + i); },
+        plus_100_function,
         Ordinal(2)
     );
 
@@ -707,17 +727,17 @@ TEST(ConcatNodeTest, SelfAssignmentKeepsObjectValid) {
 // 9. nested concat
 TEST(ConcatNodeTest, NestedConcatFiniteOmegaFiniteHasOmegaPlusFiniteLength) {
     FunctionGenerator<int> a_gen(
-        [](std::size_t i) { return static_cast<int>(10 + i); },
+        plus_10_function,
         Ordinal(2)
     );
 
     FunctionGenerator<int> b_gen(
-        [](std::size_t i) { return static_cast<int>(1000 + i); },
+        plus_1000_function,
         Omega()
     );
 
     FunctionGenerator<int> c_gen(
-        [](std::size_t i) { return static_cast<int>(2000 + i); },
+        plus_50_function,
         Ordinal(3)
     );
 
@@ -734,17 +754,17 @@ TEST(ConcatNodeTest, NestedConcatFiniteOmegaFiniteHasOmegaPlusFiniteLength) {
 
 TEST(ConcatNodeTest, NestedConcatRoutesInsideLeftConcat) {
     FunctionGenerator<int> a_gen(
-        [](std::size_t i) { return static_cast<int>(10 + i); },
+        plus_10_function,
         Ordinal(2)
     );
 
     FunctionGenerator<int> b_gen(
-        [](std::size_t i) { return static_cast<int>(1000 + i); },
+        plus_1000_function,
         Omega()
     );
 
     FunctionGenerator<int> c_gen(
-        [](std::size_t i) { return static_cast<int>(2000 + i); },
+        plus_50_function,
         Ordinal(3)
     );
 
@@ -767,17 +787,17 @@ TEST(ConcatNodeTest, NestedConcatRoutesInsideLeftConcat) {
 
 TEST(ConcatNodeTest, NestedConcatRoutesOmegaTailToFinalRightPart) {
     FunctionGenerator<int> a_gen(
-        [](std::size_t i) { return static_cast<int>(10 + i); },
+        plus_10_function,
         Ordinal(2)
     );
 
     FunctionGenerator<int> b_gen(
-        [](std::size_t i) { return static_cast<int>(1000 + i); },
+        plus_1000_function,
         Omega()
     );
 
     FunctionGenerator<int> c_gen(
-        [](std::size_t i) { return static_cast<int>(2000 + i); },
+        plus_50_function,
         Ordinal(3)
     );
 
@@ -788,9 +808,9 @@ TEST(ConcatNodeTest, NestedConcatRoutesOmegaTailToFinalRightPart) {
     ConcatNode<int> ab(a, b);
     ConcatNode<int> abc(ab, c);
 
-    EXPECT_EQ(abc.value_at(Omega(0)), 2000);
-    EXPECT_EQ(abc.value_at(Omega(1)), 2001);
-    EXPECT_EQ(abc.value_at(Omega(2)), 2002);
+    EXPECT_EQ(abc.value_at(Omega(0)), 50);
+    EXPECT_EQ(abc.value_at(Omega(1)), 51);
+    EXPECT_EQ(abc.value_at(Omega(2)), 52);
 
     EXPECT_THROW(abc.value_at(Omega(3)), std::out_of_range);
 }

@@ -17,6 +17,10 @@ static int linear_value(std::size_t index) {
     return static_cast<int>(100 + index * 10);
 }
 
+static int plus_1000_function(std::size_t index) {
+    return static_cast<int>(index + 1000);
+}
+
 TEST(SetNodeTest, LengthIsEqualToSourceLength) {
     FunctionGenerator<int> gen(linear_value, Ordinal(10));
     SourceNode<int> source(gen);
@@ -202,12 +206,7 @@ TEST(SetNodeTest, AssignmentOperatorCopiesSourceValueAndIndex) {
 
     SetNode<int> first(source1, 999, Ordinal(3));
 
-    FunctionGenerator<int> gen2(
-        [](std::size_t index) {
-            return static_cast<int>(1000 + index);
-        },
-        Ordinal(10)
-    );
+    FunctionGenerator<int> gen2(plus_1000_function, Ordinal(10));
     SourceNode<int> source2(gen2);
 
     SetNode<int> second(source2, -1, Ordinal(0));
@@ -245,12 +244,7 @@ TEST(SetNodeTest, WorksWithOrdinalIndexAfterOmega) {
     FunctionGenerator<int> left_gen(linear_value, Ordinal::omega());
     SourceNode<int> left(left_gen);
 
-    FunctionGenerator<int> right_gen(
-        [](std::size_t index) {
-            return static_cast<int>(1000 + index);
-        },
-        Ordinal(3)
-    );
+    FunctionGenerator<int> right_gen(plus_1000_function, Ordinal(3));
     SourceNode<int> right(right_gen);
 
     ConcatNode<int> concat(left, right);
