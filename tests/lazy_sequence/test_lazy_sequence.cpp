@@ -17,7 +17,7 @@ TEST(LazySequenceTest, DefaultConstructorCreatesEmptySequence) {
     EXPECT_THROW(seq.get_first(), std::exception);
     EXPECT_THROW(seq.get_last(), std::exception);
     EXPECT_THROW(seq.get(0), std::exception);
-    EXPECT_THROW(seq.get_at(Ordinal(0)), std::exception);
+    EXPECT_THROW(seq.get(Ordinal(0)), std::exception);
 }
 
 TEST(LazySequenceTest, ConstructsFromArrayAndReadsValues) {
@@ -35,9 +35,9 @@ TEST(LazySequenceTest, ConstructsFromArrayAndReadsValues) {
     EXPECT_EQ(seq.get(1), 20);
     EXPECT_EQ(seq.get(2), 30);
 
-    EXPECT_EQ(seq.get_at(Ordinal(0)), 10);
-    EXPECT_EQ(seq.get_at(Ordinal(1)), 20);
-    EXPECT_EQ(seq.get_at(Ordinal(2)), 30);
+    EXPECT_EQ(seq.get(Ordinal(0)), 10);
+    EXPECT_EQ(seq.get(Ordinal(1)), 20);
+    EXPECT_EQ(seq.get(Ordinal(2)), 30);
 }
 
 TEST(LazySequenceTest, ArrayConstructorAcceptsNullptrWhenCountIsZero) {
@@ -139,9 +139,9 @@ TEST(LazySequenceTest, FunctionSequenceCanBeInfinite) {
         Ordinal(1, 0)
     );
 
-    EXPECT_EQ(seq.get_at(Ordinal(0)), 100);
-    EXPECT_EQ(seq.get_at(Ordinal(5)), 105);
-    EXPECT_EQ(seq.get_at(Ordinal(100)), 200);
+    EXPECT_EQ(seq.get(Ordinal(0)), 100);
+    EXPECT_EQ(seq.get(Ordinal(5)), 105);
+    EXPECT_EQ(seq.get(Ordinal(100)), 200);
 
     EXPECT_THROW(seq.get_size(), std::logic_error);
     EXPECT_THROW(seq.get_last(), std::logic_error);
@@ -255,13 +255,13 @@ TEST(LazySequenceRecurrenceTest, InfiniteRecurrenceSequenceSupportsFiniteIndexes
 
     EXPECT_EQ(seq.get_ordinal_length(), Ordinal(1, 0));
 
-    EXPECT_EQ(seq.get_at(Ordinal(0)), 1);
-    EXPECT_EQ(seq.get_at(Ordinal(1)), 1);
-    EXPECT_EQ(seq.get_at(Ordinal(2)), 2);
-    EXPECT_EQ(seq.get_at(Ordinal(3)), 3);
-    EXPECT_EQ(seq.get_at(Ordinal(4)), 5);
-    EXPECT_EQ(seq.get_at(Ordinal(5)), 8);
-    EXPECT_EQ(seq.get_at(Ordinal(6)), 13);
+    EXPECT_EQ(seq.get(Ordinal(0)), 1);
+    EXPECT_EQ(seq.get(Ordinal(1)), 1);
+    EXPECT_EQ(seq.get(Ordinal(2)), 2);
+    EXPECT_EQ(seq.get(Ordinal(3)), 3);
+    EXPECT_EQ(seq.get(Ordinal(4)), 5);
+    EXPECT_EQ(seq.get(Ordinal(5)), 8);
+    EXPECT_EQ(seq.get(Ordinal(6)), 13);
 
     EXPECT_THROW(seq.get_size(), std::logic_error);
     EXPECT_THROW(seq.get_last(), std::logic_error);
@@ -463,9 +463,9 @@ TEST(LazySequenceTest, AppendToInfiniteSequencePlacesItemAtOmegaIndex) {
 
     EXPECT_EQ(result->get_ordinal_length(), Ordinal(1, 1));
 
-    EXPECT_EQ(result->get_at(Ordinal(0)), 0);
-    EXPECT_EQ(result->get_at(Ordinal(10)), 10);
-    EXPECT_EQ(result->get_at(Ordinal(1, 0)), 999);
+    EXPECT_EQ(result->get(Ordinal(0)), 0);
+    EXPECT_EQ(result->get(Ordinal(10)), 10);
+    EXPECT_EQ(result->get(Ordinal(1, 0)), 999);
 
     delete result;
 }
@@ -506,9 +506,9 @@ TEST(LazySequenceTest, PrependToInfiniteSequenceDoesNotShiftTransfiniteIndex) {
 
     EXPECT_EQ(result->get_ordinal_length(), Ordinal(1, 0));
 
-    EXPECT_EQ(result->get_at(Ordinal(0)), 999);
-    EXPECT_EQ(result->get_at(Ordinal(1)), 0);
-    EXPECT_EQ(result->get_at(Ordinal(2)), 10);
+    EXPECT_EQ(result->get(Ordinal(0)), 999);
+    EXPECT_EQ(result->get(Ordinal(1)), 0);
+    EXPECT_EQ(result->get(Ordinal(2)), 10);
 
     delete result;
 }
@@ -869,12 +869,12 @@ TEST(LazySequenceTest, ConcatWithOrdinalsInfinitePlusFinite) {
 
     EXPECT_EQ(result->get_ordinal_length(), Ordinal(1, 3));
 
-    EXPECT_EQ(result->get_at(Ordinal(0)), 0);
-    EXPECT_EQ(result->get_at(Ordinal(10)), 10);
+    EXPECT_EQ(result->get(Ordinal(0)), 0);
+    EXPECT_EQ(result->get(Ordinal(10)), 10);
 
-    EXPECT_EQ(result->get_at(Ordinal(1, 0)), 100);
-    EXPECT_EQ(result->get_at(Ordinal(1, 1)), 200);
-    EXPECT_EQ(result->get_at(Ordinal(1, 2)), 300);
+    EXPECT_EQ(result->get(Ordinal(1, 0)), 100);
+    EXPECT_EQ(result->get(Ordinal(1, 1)), 200);
+    EXPECT_EQ(result->get(Ordinal(1, 2)), 300);
 
     delete result;
 }
@@ -964,7 +964,7 @@ TEST(LazySequenceTest, GetAtRejectsOrdinalOutOfRange) {
     int items[] = {10, 20};
     LazySequence<int> seq(items, 2);
 
-    EXPECT_THROW(seq.get_at(Ordinal(2)), std::exception);
+    EXPECT_THROW(seq.get(Ordinal(2)), std::exception);
 }
 
 TEST(LazySequenceTest, GetLastThrowsForEmptySequence) {
