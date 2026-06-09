@@ -4,22 +4,24 @@
 #include <stdexcept>
 
 #include "output_stream.hpp"
-#include "../adt_lab_2/sequence.hpp"
+#include "adt_lab_2/sequence.hpp"
 
 template <typename T>
 class SequenceOutputStream : public OutputStream<T> {
 public:
-    explicit SequenceOutputStream(Sequence<T>*& target) : 
+    explicit SequenceOutputStream(Sequence<T>* target) :
         target_(target),
+        owns_target_(false),  // starts with false, we can't delete the sequence from outside
         position_(0),
         is_open_(false)
     {
-        if (target_ == nullptr) 
-            throw std::invalid_argument("sequence output stream target is null");
-        
-
-        open();
+        if (target_ == nullptr)
+            throw std::invalid_argument("SequenceOutputStream<T>::constructor: Target sequence is null");
     }
+
+    explicit SequenceOutputStream(Sequence<T>& target) :
+        SequenceOutputStream(&target)
+    {}
 
     SequenceOutputStream(const SequenceOutputStream<T>& other) = delete;
 
@@ -27,69 +29,88 @@ public:
 
     ~SequenceOutputStream() override {
         close();
+
+        if (owns_target_)
+            delete target_;
     }
 
     // writes item to sequence and moves position forward
     std::size_t output(const T& item) override {
-        ensure_open();
-        ensure_target();
+        ensure_target_();
+        ensure_open_();
 
-        Sequence<T>* result = target_->append(item);
+        // for mutable 'append' returns this, so target doesn't change
+        // for immutable 'append' returns new sequence, so target updates
 
-        if (result == nullptr) {
-            throw std::runtime_error("sequence append returned null");
+        Sequence<T>* old_target = target_;  // what was the target before append
+        bool old_owns_target = owns_target_;  // could stream delete (before append)
+
+        Sequence<T>* result = target_->append(item);  // result may be the new seq or the old one (just updated)
+
+        if (result == nullptr)
+            throw std::runtime_error("SequenceOutputStream<T>::output: Sequence append returned null");
+
+        // if immutable
+        if (result != old_target) {
+            target_ = result;
+            owns_target_ = true;
+
+            if (old_owns_target)
+                delete old_target;
         }
 
-        target_ = result;
         ++position_;
-
         return position_;
     }
 
-    // returns current stream position
+    // returns number of already written items
     std::size_t get_position() const override {
+        ensure_open_();
         return position_;
     }
 
-    // opens stream for writing
     void open() override {
-        ensure_target();
+        if (is_open_)
+            throw std::logic_error("SequenceOutputStream<T>::open: The stream is already open");
+
+        ensure_target_();
 
         position_ = static_cast<std::size_t>(target_->get_size());
         is_open_ = true;
     }
 
-    // closes stream for writing
     void close() override {
         is_open_ = false;
     }
 
-    // returns current target sequence
-    Sequence<T>* get_sequence() {
-        return target_;
-    }
+    // releases current sequence and disables stream, gives the responsibility for owning the target outside, final point
+    Sequence<T>* release_sequence() {
+        if (target_ == nullptr)
+            throw std::logic_error("SequenceOutputStream<T>::release_sequence: The sequence is already released");
 
-    // returns current target sequence
-    const Sequence<T>* get_sequence() const {
-        return target_;
+        Sequence<T>* result = target_;
+
+        target_ = nullptr;
+        owns_target_ = false;
+        is_open_ = false;
+
+        return result;
     }
 
 private:
-    Sequence<T>*& target_;
-    std::size_t position_;
+    Sequence<T>* target_;  // current target sequence
+    bool owns_target_;
+    std::size_t position_;  // how many elements are already written
     bool is_open_;
 
     // checks that stream is open
-    void ensure_open() const {
-        if (!is_open_) {
-            throw std::logic_error("stream is closed");
-        }
+    void ensure_open_() const {
+        if (!is_open_)
+            throw std::logic_error("SequenceOutputStream<T>::ensure_open_: The stream is closed");
     }
 
-    // checks that target sequence exists
-    void ensure_target() const {
-        if (target_ == nullptr) {
-            throw std::logic_error("sequence output stream target is null");
-        }
+    void ensure_target_() const {
+        if (target_ == nullptr)
+            throw std::logic_error("SequenceOutputStream<T>::ensure_target_: The sequence is released");
     }
 };
