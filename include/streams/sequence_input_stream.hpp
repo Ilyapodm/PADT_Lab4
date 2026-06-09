@@ -33,13 +33,13 @@ public:
 
     // returns true if stream has no more items
     bool is_end_of_stream() const override {
-        ensure_open();
+        ensure_open_();
         return !buffered_item_.has_value();
     }
 
     // reads current item and moves stream position forward
     T input() override {
-        ensure_open();
+        ensure_open_();
 
         if (is_end_of_stream()) {
             throw std::out_of_range("SequenceInputStream<T>::input: End of stream");
@@ -49,7 +49,7 @@ public:
 
         //clear_buffer();
         ++position_;
-        load_next();
+        load_next_();
 
         return result;
     }
@@ -66,13 +66,13 @@ public:
 
     // moves stream to given position
     std::size_t seek(std::size_t index) override {
-        ensure_open();
+        ensure_open_();
 
         // don't have to reset, can move forward
         if (index < position_) {
             iterator_->reset();
             position_ = 0;
-            load_next();
+            load_next_();
         }
 
 
@@ -82,7 +82,7 @@ public:
             }
 
             ++position_;
-            load_next();
+            load_next_();
         }
 
         return position_;
@@ -106,7 +106,7 @@ public:
         position_ = 0;
         is_open_ = true;
 
-        load_next();
+        load_next_();
     }
 
     void close() override {
@@ -119,14 +119,14 @@ public:
     }
 
     void reset() override {
-        ensure_open();
+        ensure_open_();
 
         iterator_->reset();
         position_ = 0;
 
         buffered_item_ = Option<T>();
 
-        load_next();
+        load_next_();
     }
 
 private:
@@ -139,15 +139,15 @@ private:
     bool is_open_;
 
     // checks that stream is open
-    void ensure_open() const {
+    void ensure_open_() const {
         if (!is_open_) 
-            throw std::logic_error("SequenceInputStream<T>::ensure_open: the stream is closed");
+            throw std::logic_error("SequenceInputStream<T>::ensure_open_: the stream is closed");
     }
 
     // loads next item from enumerator to buffer
-    void load_next() {
+    void load_next_() {
         if (iterator_ == nullptr) {
-            throw std::logic_error("SequenceInputStream<T>::load_next: stream iterator is null");
+            throw std::logic_error("SequenceInputStream<T>::load_next_: stream iterator is null");
         }
 
         if (iterator_->move_next()) 

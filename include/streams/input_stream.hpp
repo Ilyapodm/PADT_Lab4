@@ -34,3 +34,5 @@ public:
     // resets the stream
     virtual void reset() = 0;
 };
+// TODO сделать отдельный output (корректная запись в конец) и input (ординальный сик) потоки для lazy sequence
+// TODO сделать файловые потоки
