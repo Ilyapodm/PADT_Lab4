@@ -4,18 +4,7 @@
 
 #include "generators/function_generator.hpp"
 #include "core/ordinal.hpp"
-
-static int square_function(std::size_t index) {
-    return static_cast<int>(index * index);
-}
-
-static int identity_function(std::size_t index) {
-    return static_cast<int>(index);
-}
-
-static int multiply_by_ten_function(std::size_t index) {
-    return static_cast<int>(index * 10);
-}
+#include "utils/generator_functions.hpp"
 
 TEST(FunctionGeneratorTest, FiniteGeneratorProducesValuesInOrder) {
     FunctionGenerator<int> gen(square_function, Ordinal(5)
@@ -100,7 +89,7 @@ TEST(FunctionGeneratorTest, LengthReturnsConstructorLength) {
 }
 
 TEST(FunctionGeneratorTest, CloneCopiesCurrentState) {
-    FunctionGenerator<int> gen(multiply_by_ten_function, Ordinal(10));
+    FunctionGenerator<int> gen(multiply_by_10_function, Ordinal(10));
 
     EXPECT_EQ(gen.get_next(), 0);
     EXPECT_EQ(gen.get_next(), 10);

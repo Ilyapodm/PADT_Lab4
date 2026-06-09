@@ -6,19 +6,17 @@
 #include "nodes/source_node.hpp"
 #include "nodes/subsequence_node.hpp"
 #include "core/ordinal.hpp"
+#include "utils/generator_functions.hpp"
+#include "helpers/call_counter.hpp"
 
 static void expect_ordinal_eq(const Ordinal& value, std::size_t omega_coeff, std::size_t finite_part) {
     EXPECT_EQ(value.get_omega_coeff(), omega_coeff);
     EXPECT_EQ(value.get_finite_part(), finite_part);
 }
 
-static int linear_value(std::size_t index) {
-    return static_cast<int>(100 + index * 10);
-}
-
 // source: 100, 110, 120, 130, 140, 150, ...
 TEST(SubsequenceNodeTest, ConstructorComputesFiniteLength) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(10));
+    FunctionGenerator<int> gen(linear_function, Ordinal(10));
     SourceNode<int> source(gen);
 
     SubsequenceNode<int> sub(source, Ordinal(2), Ordinal(7));
@@ -28,7 +26,7 @@ TEST(SubsequenceNodeTest, ConstructorComputesFiniteLength) {
 }
 
 TEST(SubsequenceNodeTest, ValueAtTranslatesLocalIndexToSourceIndex) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(10));
+    FunctionGenerator<int> gen(linear_function, Ordinal(10));
     SourceNode<int> source(gen);
 
     SubsequenceNode<int> sub(source, Ordinal(2), Ordinal(7));
@@ -41,7 +39,7 @@ TEST(SubsequenceNodeTest, ValueAtTranslatesLocalIndexToSourceIndex) {
 }
 
 TEST(SubsequenceNodeTest, WorksFromBeginning) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(10));
+    FunctionGenerator<int> gen(linear_function, Ordinal(10));
     SourceNode<int> source(gen);
 
     SubsequenceNode<int> sub(source, Ordinal(0), Ordinal(4));
@@ -55,7 +53,7 @@ TEST(SubsequenceNodeTest, WorksFromBeginning) {
 }
 
 TEST(SubsequenceNodeTest, WorksUntilSourceEnd) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(10));
+    FunctionGenerator<int> gen(linear_function, Ordinal(10));
     SourceNode<int> source(gen);
 
     SubsequenceNode<int> sub(source, Ordinal(7), Ordinal(10));
@@ -68,7 +66,7 @@ TEST(SubsequenceNodeTest, WorksUntilSourceEnd) {
 }
 
 TEST(SubsequenceNodeTest, EmptySubsequenceHasZeroLength) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(10));
+    FunctionGenerator<int> gen(linear_function, Ordinal(10));
     SourceNode<int> source(gen);
 
     SubsequenceNode<int> sub(source, Ordinal(5), Ordinal(5));
@@ -81,7 +79,7 @@ TEST(SubsequenceNodeTest, EmptySubsequenceHasZeroLength) {
 }
 
 TEST(SubsequenceNodeTest, ValueAtThrowsWhenLocalIndexIsOutOfRange) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(10));
+    FunctionGenerator<int> gen(linear_function, Ordinal(10));
     SourceNode<int> source(gen);
 
     SubsequenceNode<int> sub(source, Ordinal(2), Ordinal(7));
@@ -93,7 +91,7 @@ TEST(SubsequenceNodeTest, ValueAtThrowsWhenLocalIndexIsOutOfRange) {
 }
 
 TEST(SubsequenceNodeTest, ConstructorThrowsWhenStartGreaterThanEnd) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(10));
+    FunctionGenerator<int> gen(linear_function, Ordinal(10));
     SourceNode<int> source(gen);
 
     EXPECT_THROW({
@@ -102,7 +100,7 @@ TEST(SubsequenceNodeTest, ConstructorThrowsWhenStartGreaterThanEnd) {
 }
 
 TEST(SubsequenceNodeTest, ConstructorThrowsWhenEndIsGreaterThanSourceLength) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(10));
+    FunctionGenerator<int> gen(linear_function, Ordinal(10));
     SourceNode<int> source(gen);
 
     EXPECT_THROW({
@@ -111,7 +109,7 @@ TEST(SubsequenceNodeTest, ConstructorThrowsWhenEndIsGreaterThanSourceLength) {
 }
 
 TEST(SubsequenceNodeTest, ConstructorAllowsFullSourceRange) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(5));
+    FunctionGenerator<int> gen(linear_function, Ordinal(5));
     SourceNode<int> source(gen);
 
     SubsequenceNode<int> sub(source, Ordinal(0), Ordinal(5));
@@ -129,7 +127,7 @@ TEST(SubsequenceNodeTest, OwnsIndependentCloneOfSource) {
     SubsequenceNode<int>* sub = nullptr;
 
     {
-        FunctionGenerator<int> gen(linear_value, Ordinal(10));
+        FunctionGenerator<int> gen(linear_function, Ordinal(10));
         SourceNode<int> source(gen);
 
         sub = new SubsequenceNode<int>(source, Ordinal(2), Ordinal(6));
@@ -150,7 +148,7 @@ TEST(SubsequenceNodeTest, CopyConstructorCreatesWorkingIndependentCopy) {
     SubsequenceNode<int>* copy = nullptr;
 
     {
-        FunctionGenerator<int> gen(linear_value, Ordinal(10));
+        FunctionGenerator<int> gen(linear_function, Ordinal(10));
         SourceNode<int> source(gen);
 
         SubsequenceNode<int> original(source, Ordinal(3), Ordinal(8));
@@ -178,7 +176,7 @@ TEST(SubsequenceNodeTest, CloneCreatesWorkingIndependentCopy) {
     SubsequenceNode<int>* cloned = nullptr;
 
     {
-        FunctionGenerator<int> gen(linear_value, Ordinal(10));
+        FunctionGenerator<int> gen(linear_function, Ordinal(10));
         SourceNode<int> source(gen);
 
         SubsequenceNode<int> original(source, Ordinal(1), Ordinal(5));
@@ -202,16 +200,14 @@ TEST(SubsequenceNodeTest, CloneCreatesWorkingIndependentCopy) {
 }
 
 TEST(SubsequenceNodeTest, AssignmentOperatorCopiesSourceAndRange) {
-    FunctionGenerator<int> gen1(linear_value, Ordinal(10));
+    FunctionGenerator<int> gen1(linear_function, Ordinal(10));
     SourceNode<int> source1(gen1);
 
     SubsequenceNode<int> first(source1, Ordinal(2), Ordinal(6));
     // first = [120, 130, 140, 150]
 
     FunctionGenerator<int> gen2(
-        [](std::size_t index) {
-            return static_cast<int>(1000 + index);
-        },
+        plus_1000_function,
         Ordinal(10)
     );
     SourceNode<int> source2(gen2);
@@ -230,7 +226,7 @@ TEST(SubsequenceNodeTest, AssignmentOperatorCopiesSourceAndRange) {
 }
 
 TEST(SubsequenceNodeTest, SelfAssignmentDoesNotBreakObject) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(10));
+    FunctionGenerator<int> gen(linear_function, Ordinal(10));
     SourceNode<int> source(gen);
 
     SubsequenceNode<int> sub(source, Ordinal(2), Ordinal(6));
@@ -246,7 +242,7 @@ TEST(SubsequenceNodeTest, SelfAssignmentDoesNotBreakObject) {
 }
 
 TEST(SubsequenceNodeTest, WorksWithOmegaEndAndFiniteStart) {
-    FunctionGenerator<int> gen(linear_value, Ordinal::omega());
+    FunctionGenerator<int> gen(linear_function, Ordinal::omega());
     SourceNode<int> source(gen);
 
     SubsequenceNode<int> sub(source, Ordinal(5), Ordinal::omega());
@@ -263,10 +259,7 @@ TEST(SubsequenceNodeTest, RepeatedAccessUsesSourceCache) {
     int call_count = 0;
 
     FunctionGenerator<int> gen(
-        [&call_count](std::size_t index) {
-            ++call_count;
-            return static_cast<int>(100 + index * 10);
-        },
+        CountingFunction(call_count, linear_function),
         Ordinal(20)
     );
 

@@ -7,28 +7,16 @@
 #include "nodes/source_node.hpp"
 #include "nodes/concat_node.hpp"
 #include "nodes/prepend_node.hpp"
+#include "utils/generator_functions.hpp"
+#include "helpers/call_counter.hpp"
 
-static void expect_ordinal_eq(const Ordinal& value,
-                              std::size_t omega_coeff,
-                              std::size_t finite_part) {
+static void expect_ordinal_eq(const Ordinal& value, std::size_t omega_coeff, std::size_t finite_part) {
     EXPECT_EQ(value.get_omega_coeff(), omega_coeff);
     EXPECT_EQ(value.get_finite_part(), finite_part);
 }
 
-static int linear_value(std::size_t index) {
-    return static_cast<int>(100 + index * 10);
-}
-
-static int identity_function(std::size_t index) {
-    return static_cast<int>(index);
-}
-
-static int plus_1000_function(std::size_t index) {
-    return static_cast<int>(index + 1000);
-}
-
 TEST(PrependNodeTest, FiniteLengthIncreasesByOne) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(5));
+    FunctionGenerator<int> gen(linear_function, Ordinal(5));
     SourceNode<int> source(gen);
 
     PrependNode<int> prepended(source, 999);
@@ -37,7 +25,7 @@ TEST(PrependNodeTest, FiniteLengthIncreasesByOne) {
 }
 
 TEST(PrependNodeTest, FirstElementIsPrependedValue) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(5));
+    FunctionGenerator<int> gen(linear_function, Ordinal(5));
     SourceNode<int> source(gen);
 
     PrependNode<int> prepended(source, 999);
@@ -46,7 +34,7 @@ TEST(PrependNodeTest, FirstElementIsPrependedValue) {
 }
 
 TEST(PrependNodeTest, FiniteIndexesAreShiftedToSource) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(5));
+    FunctionGenerator<int> gen(linear_function, Ordinal(5));
     SourceNode<int> source(gen);
 
     PrependNode<int> prepended(source, 999);
@@ -63,7 +51,7 @@ TEST(PrependNodeTest, FiniteIndexesAreShiftedToSource) {
 }
 
 TEST(PrependNodeTest, ValueAtThrowsWhenIndexIsOutOfRange) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(5));
+    FunctionGenerator<int> gen(linear_function, Ordinal(5));
     SourceNode<int> source(gen);
 
     PrependNode<int> prepended(source, 999);
@@ -75,7 +63,7 @@ TEST(PrependNodeTest, ValueAtThrowsWhenIndexIsOutOfRange) {
 }
 
 TEST(PrependNodeTest, WorksWithEmptySource) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(0));
+    FunctionGenerator<int> gen(linear_function, Ordinal(0));
     SourceNode<int> source(gen);
 
     PrependNode<int> prepended(source, 999);
@@ -90,7 +78,7 @@ TEST(PrependNodeTest, WorksWithEmptySource) {
 }
 
 TEST(PrependNodeTest, OmegaLengthStaysOmega) {
-    FunctionGenerator<int> gen(linear_value, Ordinal::omega());
+    FunctionGenerator<int> gen(linear_function, Ordinal::omega());
     SourceNode<int> source(gen);
 
     PrependNode<int> prepended(source, 999);
@@ -107,10 +95,7 @@ TEST(PrependNodeTest, RepeatedAccessUsesSourceCache) {
     int call_count = 0;
 
     FunctionGenerator<int> gen(
-        [&call_count](std::size_t index) {
-            ++call_count;
-            return static_cast<int>(100 + index * 10);
-        },
+        CountingFunction(call_count, linear_function),
         Ordinal(10)
     );
 
@@ -149,7 +134,7 @@ TEST(PrependNodeTest, CopyConstructorCreatesWorkingIndependentCopy) {
     PrependNode<int>* copy = nullptr;
 
     {
-        FunctionGenerator<int> gen(linear_value, Ordinal(5));
+        FunctionGenerator<int> gen(linear_function, Ordinal(5));
         SourceNode<int> source(gen);
 
         PrependNode<int> original(source, 999);
@@ -175,10 +160,7 @@ TEST(PrependNodeTest, ClonePreservesAlreadyMaterializedCache) {
     int call_count = 0;
 
     FunctionGenerator<int> gen(
-        [&call_count](std::size_t index) {
-            ++call_count;
-            return static_cast<int>(100 + index * 10);
-        },
+        CountingFunction(call_count, linear_function),
         Ordinal(10)
     );
 
@@ -204,7 +186,7 @@ TEST(PrependNodeTest, ClonePreservesAlreadyMaterializedCache) {
 }
 
 TEST(PrependNodeTest, AssignmentOperatorCopiesSourceValueAndLength) {
-    FunctionGenerator<int> gen1(linear_value, Ordinal(5));
+    FunctionGenerator<int> gen1(linear_function, Ordinal(5));
     SourceNode<int> source1(gen1);
 
     PrependNode<int> first(source1, 999);

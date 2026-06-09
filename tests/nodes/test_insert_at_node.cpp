@@ -7,30 +7,17 @@
 #include "nodes/source_node.hpp"
 #include "nodes/concat_node.hpp"
 #include "nodes/insert_at_node.hpp"
+#include "utils/generator_functions.hpp"
+#include "helpers/call_counter.hpp"
 
-static Ordinal omega() {
-    return Ordinal(1, 0);
-}
-
-static Ordinal omega_plus(std::size_t finite_part) {
-    return Ordinal(1, finite_part);
-}
 
 static void expect_ordinal_eq(const Ordinal& value, std::size_t omega_coeff, std::size_t finite_part) {
     EXPECT_EQ(value.get_omega_coeff(), omega_coeff);
     EXPECT_EQ(value.get_finite_part(), finite_part);
 }
 
-static int linear_value(std::size_t index) {
-    return static_cast<int>(100 + index * 10);
-}
-
-static int tail_value(std::size_t index) {
-    return static_cast<int>(1000 + index);
-}
-
 TEST(InsertAtNodeTest, InsertsIntoMiddleOfFiniteSource) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(5));
+    FunctionGenerator<int> gen(linear_function, Ordinal(5));
     SourceNode<int> source(gen);
 
     InsertAtNode<int> inserted(source, 999, Ordinal(2));
@@ -49,7 +36,7 @@ TEST(InsertAtNodeTest, InsertsIntoMiddleOfFiniteSource) {
 }
 
 TEST(InsertAtNodeTest, InsertsAtBeginningOfFiniteSource) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(4));
+    FunctionGenerator<int> gen(linear_function, Ordinal(4));
     SourceNode<int> source(gen);
 
     InsertAtNode<int> inserted(source, 999, Ordinal(0));
@@ -67,7 +54,7 @@ TEST(InsertAtNodeTest, InsertsAtBeginningOfFiniteSource) {
 }
 
 TEST(InsertAtNodeTest, InsertsAtEndOfFiniteSource) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(4));
+    FunctionGenerator<int> gen(linear_function, Ordinal(4));
     SourceNode<int> source(gen);
 
     InsertAtNode<int> inserted(source, 999, Ordinal(4));
@@ -85,7 +72,7 @@ TEST(InsertAtNodeTest, InsertsAtEndOfFiniteSource) {
 }
 
 TEST(InsertAtNodeTest, ValueAtThrowsWhenIndexIsOutOfRange) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(4));
+    FunctionGenerator<int> gen(linear_function, Ordinal(4));
     SourceNode<int> source(gen);
 
     InsertAtNode<int> inserted(source, 999, Ordinal(2));
@@ -98,7 +85,7 @@ TEST(InsertAtNodeTest, ValueAtThrowsWhenIndexIsOutOfRange) {
 }
 
 TEST(InsertAtNodeTest, InsertsIntoEmptySource) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(0));
+    FunctionGenerator<int> gen(linear_function, Ordinal(0));
     SourceNode<int> source(gen);
 
     InsertAtNode<int> inserted(source, 999, Ordinal(0));
@@ -113,7 +100,7 @@ TEST(InsertAtNodeTest, InsertsIntoEmptySource) {
 }
 
 TEST(InsertAtNodeTest, InsertsIntoFinitePartOfOmegaSource) {
-    FunctionGenerator<int> gen(linear_value, omega());
+    FunctionGenerator<int> gen(linear_function, Ordinal::omega());
     SourceNode<int> source(gen);
 
     InsertAtNode<int> inserted(source, 999, Ordinal(3));
@@ -134,10 +121,10 @@ TEST(InsertAtNodeTest, InsertsIntoFinitePartOfOmegaSource) {
 }
 
 TEST(InsertAtNodeTest, InsertsAtOmegaBoundary) {
-    FunctionGenerator<int> gen(linear_value, omega());
+    FunctionGenerator<int> gen(linear_function, Ordinal::omega());
     SourceNode<int> source(gen);
 
-    InsertAtNode<int> inserted(source, 999, omega());
+    InsertAtNode<int> inserted(source, 999, Ordinal::omega());
 
     // source.length = omega
     // insert_at(omega) gives length = omega + 1
@@ -147,18 +134,18 @@ TEST(InsertAtNodeTest, InsertsAtOmegaBoundary) {
 
     EXPECT_EQ(inserted.value_at(Ordinal(0)), 100);
     EXPECT_EQ(inserted.value_at(Ordinal(5)), 150);
-    EXPECT_EQ(inserted.value_at(omega()), 999);
+    EXPECT_EQ(inserted.value_at(Ordinal::omega()), 999);
 
     EXPECT_THROW({
-        inserted.value_at(omega_plus(1));
+        inserted.value_at(Ordinal(1,1));
     }, std::out_of_range);
 }
 
 TEST(InsertAtNodeTest, InsertBeforeOmegaBoundaryDoesNotShiftOmegaBlock) {
-    FunctionGenerator<int> left_gen(linear_value, omega());
+    FunctionGenerator<int> left_gen(linear_function, Ordinal::omega());
     SourceNode<int> left(left_gen);
 
-    FunctionGenerator<int> right_gen(tail_value, Ordinal(3));
+    FunctionGenerator<int> right_gen(plus_1000_function, Ordinal(3));
     SourceNode<int> right(right_gen);
 
     ConcatNode<int> source(left, right);
@@ -177,22 +164,22 @@ TEST(InsertAtNodeTest, InsertBeforeOmegaBoundaryDoesNotShiftOmegaBlock) {
     EXPECT_EQ(inserted.value_at(Ordinal(6)), 150);
 
     // omega-block doesn't change
-    EXPECT_EQ(inserted.value_at(omega()), 1000);
-    EXPECT_EQ(inserted.value_at(omega_plus(1)), 1001);
-    EXPECT_EQ(inserted.value_at(omega_plus(2)), 1002);
+    EXPECT_EQ(inserted.value_at(Ordinal::omega()), 1000);
+    EXPECT_EQ(inserted.value_at(Ordinal(1,1)), 1001);
+    EXPECT_EQ(inserted.value_at(Ordinal(1,2)), 1002);
 }
 
 TEST(InsertAtNodeTest, InsertsInsideFiniteTailAfterOmega) {
-    FunctionGenerator<int> left_gen(linear_value, omega());
+    FunctionGenerator<int> left_gen(linear_function, Ordinal::omega());
     SourceNode<int> left(left_gen);
 
-    FunctionGenerator<int> right_gen(tail_value, Ordinal(3));
+    FunctionGenerator<int> right_gen(plus_1000_function, Ordinal(3));
     SourceNode<int> right(right_gen);
 
     ConcatNode<int> source(left, right);
     // source.length = omega + 3
 
-    InsertAtNode<int> inserted(source, 999, omega_plus(1));
+    InsertAtNode<int> inserted(source, 999, Ordinal(1,1));
 
     // source tail: 1000, 1001, 1002
     // result tail: 1000, 999, 1001, 1002
@@ -200,36 +187,36 @@ TEST(InsertAtNodeTest, InsertsInsideFiniteTailAfterOmega) {
 
     expect_ordinal_eq(inserted.length(), 1, 4);
 
-    EXPECT_EQ(inserted.value_at(omega()), 1000);
-    EXPECT_EQ(inserted.value_at(omega_plus(1)), 999);
-    EXPECT_EQ(inserted.value_at(omega_plus(2)), 1001);
-    EXPECT_EQ(inserted.value_at(omega_plus(3)), 1002);
+    EXPECT_EQ(inserted.value_at(Ordinal::omega()), 1000);
+    EXPECT_EQ(inserted.value_at(Ordinal(1,1)), 999);
+    EXPECT_EQ(inserted.value_at(Ordinal(1,2)), 1001);
+    EXPECT_EQ(inserted.value_at(Ordinal(1,3)), 1002);
 }
 
 TEST(InsertAtNodeTest, InsertsAtEndOfOmegaPlusFiniteSource) {
-    FunctionGenerator<int> left_gen(linear_value, omega());
+    FunctionGenerator<int> left_gen(linear_function, Ordinal::omega());
     SourceNode<int> left(left_gen);
 
-    FunctionGenerator<int> right_gen(tail_value, Ordinal(3));
+    FunctionGenerator<int> right_gen(plus_1000_function, Ordinal(3));
     SourceNode<int> right(right_gen);
 
     ConcatNode<int> source(left, right);  // source.length = omega + 3
 
-    InsertAtNode<int> inserted(source, 999, omega_plus(3));
+    InsertAtNode<int> inserted(source, 999, Ordinal(1,3));
 
     expect_ordinal_eq(inserted.length(), 1, 4);
 
-    EXPECT_EQ(inserted.value_at(omega()), 1000);
-    EXPECT_EQ(inserted.value_at(omega_plus(1)), 1001);
-    EXPECT_EQ(inserted.value_at(omega_plus(2)), 1002);
-    EXPECT_EQ(inserted.value_at(omega_plus(3)), 999);
+    EXPECT_EQ(inserted.value_at(Ordinal::omega()), 1000);
+    EXPECT_EQ(inserted.value_at(Ordinal(1,1)), 1001);
+    EXPECT_EQ(inserted.value_at(Ordinal(1,2)), 1002);
+    EXPECT_EQ(inserted.value_at(Ordinal(1,3)), 999);
 }
 
 TEST(InsertAtNodeTest, OwnsIndependentCloneOfSource) {
     InsertAtNode<int>* inserted = nullptr;
 
     {
-        FunctionGenerator<int> gen(linear_value, Ordinal(5));
+        FunctionGenerator<int> gen(linear_function, Ordinal(5));
         SourceNode<int> source(gen);
 
         inserted = new InsertAtNode<int>(source, 999, Ordinal(2));
@@ -250,7 +237,7 @@ TEST(InsertAtNodeTest, CopyConstructorCreatesIndependentCopy) {
     InsertAtNode<int>* copy = nullptr;
 
     {
-        FunctionGenerator<int> gen(linear_value, Ordinal(5));
+        FunctionGenerator<int> gen(linear_function, Ordinal(5));
         SourceNode<int> source(gen);
 
         InsertAtNode<int> original(source, 999, Ordinal(2));
@@ -273,22 +260,20 @@ TEST(InsertAtNodeTest, CopyConstructorCreatesIndependentCopy) {
 }
 
 TEST(InsertAtNodeTest, AssignmentOperatorCopiesSourceValueIndexAndLength) {
-    FunctionGenerator<int> gen1(linear_value, Ordinal(5));
+    FunctionGenerator<int> gen1(linear_function, Ordinal(5));
     SourceNode<int> source1(gen1);
 
     InsertAtNode<int> first(source1, 999, Ordinal(2));
     // first: 100, 110, 999, 120, 130, 140
 
     FunctionGenerator<int> gen2(
-        [](std::size_t index) {
-            return static_cast<int>(2000 + index);
-        },
+        plus_1000_function,
         Ordinal(3)
     );
     SourceNode<int> source2(gen2);
 
     InsertAtNode<int> second(source2, -1, Ordinal(0));
-    // second: -1, 2000, 2001, 2002
+    // second: -1, 1000, 1001, 1002
 
     second = first;
 
@@ -306,10 +291,7 @@ TEST(InsertAtNodeTest, RepeatedAccessUsesSourceCache) {
     int call_count = 0;
 
     FunctionGenerator<int> gen(
-        [&call_count](std::size_t index) {
-            ++call_count;
-            return static_cast<int>(100 + index * 10);
-        },
+        CountingFunction(call_count, linear_function),
         Ordinal(20)
     );
 
@@ -345,10 +327,7 @@ TEST(InsertAtNodeTest, ClonePreservesAlreadyMaterializedCache) {
     int call_count = 0;
 
     FunctionGenerator<int> gen(
-        [&call_count](std::size_t index) {
-            ++call_count;
-            return static_cast<int>(100 + index * 10);
-        },
+        CountingFunction(call_count, linear_function),
         Ordinal(20)
     );
 

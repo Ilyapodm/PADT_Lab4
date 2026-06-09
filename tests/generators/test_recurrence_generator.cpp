@@ -8,41 +8,8 @@
 #include "generators/recurrence_generator.hpp"
 #include "adt/ring_buffer.hpp"
 #include "core/ordinal.hpp"
+#include "utils/generator_functions.hpp"
 
-
-// ---------- Rule functions ----------
-
-static int fibonacci_ring_rule(const RingBuffer<int>& window) {
-    return window.get(0) + window.get(1);
-}
-
-static int tribonacci_ring_Rule(const RingBuffer<int>& window) {
-    return window.get(0) + window.get(1) + window.get(2);
-}
-
-static int zero_ring_rule(const RingBuffer<int>&) {
-    return 0;
-}
-
-static int fibonacci_array_rule(const int* window, std::size_t count) {
-    if (count != 2) {
-        throw std::invalid_argument("fibonacci_array_rule: count must be 2");
-    }
-
-    return window[0] + window[1];
-}
-
-static int tribonacci_array_rule(const int* window, std::size_t count) {
-    if (count != 3) {
-        throw std::invalid_argument("tribonacci_array_rule: count must be 3");
-    }
-
-    return window[0] + window[1] + window[2];
-}
-
-static int zero_array_rule(const int*, std::size_t) {
-    return 0;
-}
 
 // cheks, that array_window get elements in a right order:
 // window[0] — the oldest
@@ -57,10 +24,7 @@ static int ordered_array_rule(const int* window, std::size_t count) {
 
 // ---------- Test helpers ----------
 
-static void ExpectGenerated(
-    RecurrenceGenerator<int>& gen,
-    std::initializer_list<int> expected_values
-) {
+static void ExpectGenerated(RecurrenceGenerator<int>& gen, std::initializer_list<int> expected_values) {
     std::size_t index = 0;
 
     for (int expected : expected_values) {

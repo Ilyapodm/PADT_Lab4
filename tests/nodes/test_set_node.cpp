@@ -7,22 +7,16 @@
 #include "nodes/source_node.hpp"
 #include "nodes/concat_node.hpp"
 #include "nodes/set_node.hpp"
+#include "utils/generator_functions.hpp"
+#include "helpers/call_counter.hpp"
 
 static void expect_ordinal_eq(const Ordinal& value, std::size_t omega_coeff, std::size_t finite_part) {
     EXPECT_EQ(value.get_omega_coeff(), omega_coeff);
     EXPECT_EQ(value.get_finite_part(), finite_part);
 }
 
-static int linear_value(std::size_t index) {
-    return static_cast<int>(100 + index * 10);
-}
-
-static int plus_1000_function(std::size_t index) {
-    return static_cast<int>(index + 1000);
-}
-
 TEST(SetNodeTest, LengthIsEqualToSourceLength) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(10));
+    FunctionGenerator<int> gen(linear_function, Ordinal(10));
     SourceNode<int> source(gen);
 
     SetNode<int> node(source, 999, Ordinal(4));
@@ -31,7 +25,7 @@ TEST(SetNodeTest, LengthIsEqualToSourceLength) {
 }
 
 TEST(SetNodeTest, ReplacesOnlySelectedIndex) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(10));
+    FunctionGenerator<int> gen(linear_function, Ordinal(10));
     SourceNode<int> source(gen);
 
     SetNode<int> node(source, 999, Ordinal(3));
@@ -47,7 +41,7 @@ TEST(SetNodeTest, ReplacesOnlySelectedIndex) {
 }
 
 TEST(SetNodeTest, CanReplaceFirstElement) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(5));
+    FunctionGenerator<int> gen(linear_function, Ordinal(5));
     SourceNode<int> source(gen);
 
     SetNode<int> node(source, -1, Ordinal(0));
@@ -58,7 +52,7 @@ TEST(SetNodeTest, CanReplaceFirstElement) {
 }
 
 TEST(SetNodeTest, CanReplaceLastFiniteElement) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(5));
+    FunctionGenerator<int> gen(linear_function, Ordinal(5));
     SourceNode<int> source(gen);
 
     SetNode<int> node(source, 777, Ordinal(4));
@@ -69,7 +63,7 @@ TEST(SetNodeTest, CanReplaceLastFiniteElement) {
 }
 
 TEST(SetNodeTest, ValueAtThrowsWhenIndexIsOutOfRange) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(5));
+    FunctionGenerator<int> gen(linear_function, Ordinal(5));
     SourceNode<int> source(gen);
 
     SetNode<int> node(source, 999, Ordinal(2));
@@ -80,7 +74,7 @@ TEST(SetNodeTest, ValueAtThrowsWhenIndexIsOutOfRange) {
 }
 
 TEST(SetNodeTest, ConstructorThrowsWhenSetIndexEqualsLength) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(5));
+    FunctionGenerator<int> gen(linear_function, Ordinal(5));
     SourceNode<int> source(gen);
 
     EXPECT_THROW({
@@ -89,7 +83,7 @@ TEST(SetNodeTest, ConstructorThrowsWhenSetIndexEqualsLength) {
 }
 
 TEST(SetNodeTest, ConstructorThrowsWhenSetIndexGreaterThanLength) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(5));
+    FunctionGenerator<int> gen(linear_function, Ordinal(5));
     SourceNode<int> source(gen);
 
     EXPECT_THROW({
@@ -101,10 +95,7 @@ TEST(SetNodeTest, AccessToReplacedIndexDoesNotCallSourceFunction) {
     int call_count = 0;
 
     FunctionGenerator<int> gen(
-        [&call_count](std::size_t index) {
-            ++call_count;
-            return static_cast<int>(100 + index * 10);
-        },
+        CountingFunction(call_count, linear_function),
         Ordinal(10)
     );
 
@@ -125,10 +116,7 @@ TEST(SetNodeTest, NonReplacedIndexUsesSourceCache) {
     int call_count = 0;
 
     FunctionGenerator<int> gen(
-        [&call_count](std::size_t index) {
-            ++call_count;
-            return static_cast<int>(100 + index * 10);
-        },
+        CountingFunction(call_count, linear_function),
         Ordinal(10)
     );
 
@@ -160,7 +148,7 @@ TEST(SetNodeTest, OwnsIndependentCloneOfSource) {
     SetNode<int>* node = nullptr;
 
     {
-        FunctionGenerator<int> gen(linear_value, Ordinal(10));
+        FunctionGenerator<int> gen(linear_function, Ordinal(10));
         SourceNode<int> source(gen);
 
         node = new SetNode<int>(source, 999, Ordinal(3));
@@ -180,7 +168,7 @@ TEST(SetNodeTest, CopyConstructorCreatesIndependentCopy) {
     SetNode<int>* copy = nullptr;
 
     {
-        FunctionGenerator<int> gen(linear_value, Ordinal(10));
+        FunctionGenerator<int> gen(linear_function, Ordinal(10));
         SourceNode<int> source(gen);
 
         SetNode<int> original(source, 999, Ordinal(3));
@@ -201,7 +189,7 @@ TEST(SetNodeTest, CopyConstructorCreatesIndependentCopy) {
 }
 
 TEST(SetNodeTest, AssignmentOperatorCopiesSourceValueAndIndex) {
-    FunctionGenerator<int> gen1(linear_value, Ordinal(10));
+    FunctionGenerator<int> gen1(linear_function, Ordinal(10));
     SourceNode<int> source1(gen1);
 
     SetNode<int> first(source1, 999, Ordinal(3));
@@ -226,7 +214,7 @@ TEST(SetNodeTest, AssignmentOperatorCopiesSourceValueAndIndex) {
 }
 
 TEST(SetNodeTest, WorksWithOmegaLengthAndFiniteSetIndex) {
-    FunctionGenerator<int> gen(linear_value, Ordinal::omega());
+    FunctionGenerator<int> gen(linear_function, Ordinal::omega());
     SourceNode<int> source(gen);
 
     SetNode<int> node(source, 999, Ordinal(5));
@@ -241,7 +229,7 @@ TEST(SetNodeTest, WorksWithOmegaLengthAndFiniteSetIndex) {
 }
 
 TEST(SetNodeTest, WorksWithOrdinalIndexAfterOmega) {
-    FunctionGenerator<int> left_gen(linear_value, Ordinal::omega());
+    FunctionGenerator<int> left_gen(linear_function, Ordinal::omega());
     SourceNode<int> left(left_gen);
 
     FunctionGenerator<int> right_gen(plus_1000_function, Ordinal(3));

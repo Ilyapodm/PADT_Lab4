@@ -6,18 +6,16 @@
 #include "generators/function_generator.hpp"
 #include "nodes/source_node.hpp"
 #include "nodes/append_node.hpp"
+#include "helpers/call_counter.hpp"
+#include "utils/generator_functions.hpp"
 
 static void expect_ordinal_eq(const Ordinal& value, std::size_t omega_coeff, std::size_t finite_part) {
     EXPECT_EQ(value.get_omega_coeff(), omega_coeff);
     EXPECT_EQ(value.get_finite_part(), finite_part);
 }
 
-static int linear_value(std::size_t index) {
-    return static_cast<int>(100 + index * 10);
-}
-
 TEST(AppendNodeTest, ConstructorComputesFiniteLength) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(5));
+    FunctionGenerator<int> gen(linear_function, Ordinal(5));
     SourceNode<int> source(gen);
 
     AppendNode<int> app(source, 999);
@@ -28,7 +26,7 @@ TEST(AppendNodeTest, ConstructorComputesFiniteLength) {
 }
 
 TEST(AppendNodeTest, ValueAtReturnsSourceValuesAndAppendedValue) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(5));
+    FunctionGenerator<int> gen(linear_function, Ordinal(5));
     SourceNode<int> source(gen);
 
     AppendNode<int> app(source, 999);
@@ -44,7 +42,7 @@ TEST(AppendNodeTest, ValueAtReturnsSourceValuesAndAppendedValue) {
 }
 
 TEST(AppendNodeTest, ValueAtThrowsWhenIndexIsOutOfRange) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(5));
+    FunctionGenerator<int> gen(linear_function, Ordinal(5));
     SourceNode<int> source(gen);
 
     AppendNode<int> app(source, 999);
@@ -56,7 +54,7 @@ TEST(AppendNodeTest, ValueAtThrowsWhenIndexIsOutOfRange) {
 }
 
 TEST(AppendNodeTest, AppendToEmptySourceWorks) {
-    FunctionGenerator<int> gen(linear_value, Ordinal(0));
+    FunctionGenerator<int> gen(linear_function, Ordinal(0));
     SourceNode<int> source(gen);
 
     AppendNode<int> app(source, 777);
@@ -71,7 +69,7 @@ TEST(AppendNodeTest, AppendToEmptySourceWorks) {
 }
 
 TEST(AppendNodeTest, AppendToOmegaSourceHasOmegaPlusOneLength) {
-    FunctionGenerator<int> gen(linear_value, Ordinal::omega());
+    FunctionGenerator<int> gen(linear_function, Ordinal::omega());
     SourceNode<int> source(gen);
 
     AppendNode<int> app(source, 999);
@@ -82,7 +80,7 @@ TEST(AppendNodeTest, AppendToOmegaSourceHasOmegaPlusOneLength) {
 }
 
 TEST(AppendNodeTest, ValueAtOmegaReturnsAppendedValue) {
-    FunctionGenerator<int> gen(linear_value, Ordinal::omega());
+    FunctionGenerator<int> gen(linear_function, Ordinal::omega());
     SourceNode<int> source(gen);
 
     AppendNode<int> app(source, 999);
@@ -96,7 +94,7 @@ TEST(AppendNodeTest, ValueAtOmegaReturnsAppendedValue) {
 }
 
 TEST(AppendNodeTest, ValueAtOmegaPlusOneThrows) {
-    FunctionGenerator<int> gen(linear_value, Ordinal::omega());
+    FunctionGenerator<int> gen(linear_function, Ordinal::omega());
     SourceNode<int> source(gen);
 
     AppendNode<int> app(source, 999);
@@ -111,10 +109,7 @@ TEST(AppendNodeTest, AccessingAppendedValueDoesNotEvaluateSource) {
     int call_count = 0;
 
     FunctionGenerator<int> gen(
-        [&call_count](std::size_t index) {
-            ++call_count;
-            return static_cast<int>(100 + index * 10);
-        },
+        CountingFunction(call_count, linear_function),
         Ordinal(5)
     );
 
@@ -134,10 +129,7 @@ TEST(AppendNodeTest, RepeatedSourceAccessUsesSourceCache) {
     int call_count = 0;
 
     FunctionGenerator<int> gen(
-        [&call_count](std::size_t index) {
-            ++call_count;
-            return static_cast<int>(100 + index * 10);
-        },
+        CountingFunction(call_count, linear_function),
         Ordinal(10)
     );
 
@@ -173,7 +165,7 @@ TEST(AppendNodeTest, OwnsIndependentCloneOfSource) {
     AppendNode<int>* app = nullptr;
 
     {
-        FunctionGenerator<int> gen(linear_value, Ordinal(5));
+        FunctionGenerator<int> gen(linear_function, Ordinal(5));
         SourceNode<int> source(gen);
 
         app = new AppendNode<int>(source, 999);
@@ -193,7 +185,7 @@ TEST(AppendNodeTest, CopyConstructorCreatesIndependentWorkingCopy) {
     AppendNode<int>* copy = nullptr;
 
     {
-        FunctionGenerator<int> gen(linear_value, Ordinal(5));
+        FunctionGenerator<int> gen(linear_function, Ordinal(5));
         SourceNode<int> source(gen);
 
         AppendNode<int> original(source, 999);
@@ -220,10 +212,7 @@ TEST(AppendNodeTest, ClonePreservesMaterializedSourceCache) {
     int call_count = 0;
 
     FunctionGenerator<int> gen(
-        [&call_count](std::size_t index) {
-            ++call_count;
-            return static_cast<int>(100 + index * 10);
-        },
+        CountingFunction(call_count, linear_function),
         Ordinal(10)
     );
 
@@ -252,16 +241,14 @@ TEST(AppendNodeTest, ClonePreservesMaterializedSourceCache) {
 }
 
 TEST(AppendNodeTest, AssignmentOperatorCopiesSourceAndValue) {
-    FunctionGenerator<int> gen1(linear_value, Ordinal(5));
+    FunctionGenerator<int> gen1(linear_function, Ordinal(5));
     SourceNode<int> source1(gen1);
 
     AppendNode<int> first(source1, 999);
     // first = [100, 110, 120, 130, 140, 999]
 
     FunctionGenerator<int> gen2(
-        [](std::size_t index) {
-            return static_cast<int>(1000 + index);
-        },
+        plus_1000_function,
         Ordinal(3)
     );
 

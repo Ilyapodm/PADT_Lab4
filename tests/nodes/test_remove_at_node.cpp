@@ -7,26 +7,16 @@
 #include "nodes/concat_node.hpp"
 #include "nodes/remove_at_node.hpp"
 #include "core/ordinal.hpp"
-
-static Ordinal omega_plus(std::size_t finite_part) {
-    return Ordinal(1, finite_part);
-}
+#include "utils/generator_functions.hpp"
+#include "helpers/call_counter.hpp"
 
 static void expect_ordinal_eq(const Ordinal& value, std::size_t omega_coeff, std::size_t finite_part) {
     EXPECT_EQ(value.get_omega_coeff(), omega_coeff);
     EXPECT_EQ(value.get_finite_part(), finite_part);
 }
 
-static int identity_value(std::size_t index) {
-    return static_cast<int>(index);
-}
-
-static int tail_value(std::size_t index) {
-    return static_cast<int>(1000 + index);
-}
-
 TEST(RemoveAtNodeTest, RemovesMiddleElementFromFiniteSource) {
-    FunctionGenerator<int> gen(identity_value, Ordinal(5));
+    FunctionGenerator<int> gen(identity_function, Ordinal(5));
     SourceNode<int> source(gen);
 
     RemoveAtNode<int> node(source, Ordinal(2));
@@ -40,7 +30,7 @@ TEST(RemoveAtNodeTest, RemovesMiddleElementFromFiniteSource) {
 }
 
 TEST(RemoveAtNodeTest, RemovesFirstElementFromFiniteSource) {
-    FunctionGenerator<int> gen(identity_value, Ordinal(5));
+    FunctionGenerator<int> gen(identity_function, Ordinal(5));
     SourceNode<int> source(gen);
 
     RemoveAtNode<int> node(source, Ordinal(0));
@@ -54,7 +44,7 @@ TEST(RemoveAtNodeTest, RemovesFirstElementFromFiniteSource) {
 }
 
 TEST(RemoveAtNodeTest, RemovesLastElementFromFiniteSource) {
-    FunctionGenerator<int> gen(identity_value, Ordinal(5));
+    FunctionGenerator<int> gen(identity_function, Ordinal(5));
     SourceNode<int> source(gen);
 
     RemoveAtNode<int> node(source, Ordinal(4));
@@ -68,7 +58,7 @@ TEST(RemoveAtNodeTest, RemovesLastElementFromFiniteSource) {
 }
 
 TEST(RemoveAtNodeTest, ValueAtThrowsWhenIndexIsOutOfResultRange) {
-    FunctionGenerator<int> gen(identity_value, Ordinal(5));
+    FunctionGenerator<int> gen(identity_function, Ordinal(5));
     SourceNode<int> source(gen);
 
     RemoveAtNode<int> node(source, Ordinal(2));
@@ -79,7 +69,7 @@ TEST(RemoveAtNodeTest, ValueAtThrowsWhenIndexIsOutOfResultRange) {
 }
 
 TEST(RemoveAtNodeTest, ConstructorThrowsWhenIndexEqualsFiniteLength) {
-    FunctionGenerator<int> gen(identity_value, Ordinal(5));
+    FunctionGenerator<int> gen(identity_function, Ordinal(5));
     SourceNode<int> source(gen);
 
     EXPECT_THROW({
@@ -92,7 +82,7 @@ TEST(RemoveAtNodeTest, ConstructorThrowsWhenIndexEqualsFiniteLength) {
 }
 
 TEST(RemoveAtNodeTest, RemovesFiniteIndexFromOmegaSource) {
-    FunctionGenerator<int> gen(identity_value, Ordinal::omega());
+    FunctionGenerator<int> gen(identity_function, Ordinal::omega());
     SourceNode<int> source(gen);
 
     RemoveAtNode<int> node(source, Ordinal(5));
@@ -107,7 +97,7 @@ TEST(RemoveAtNodeTest, RemovesFiniteIndexFromOmegaSource) {
 }
 
 TEST(RemoveAtNodeTest, ConstructorThrowsWhenRemovingOmegaIndexFromOmegaSource) {
-    FunctionGenerator<int> gen(identity_value, Ordinal::omega());
+    FunctionGenerator<int> gen(identity_function, Ordinal::omega());
     SourceNode<int> source(gen);
 
     EXPECT_THROW({
@@ -116,10 +106,10 @@ TEST(RemoveAtNodeTest, ConstructorThrowsWhenRemovingOmegaIndexFromOmegaSource) {
 }
 
 TEST(RemoveAtNodeTest, RemovesFiniteIndexFromOmegaPlusFiniteSource) {
-    FunctionGenerator<int> left_gen(identity_value, Ordinal::omega());
+    FunctionGenerator<int> left_gen(identity_function, Ordinal::omega());
     SourceNode<int> left(left_gen);
 
-    FunctionGenerator<int> right_gen(tail_value, Ordinal(3));
+    FunctionGenerator<int> right_gen(plus_1000_function, Ordinal(3));
     SourceNode<int> right(right_gen);
 
     ConcatNode<int> source(left, right);
@@ -132,65 +122,65 @@ TEST(RemoveAtNodeTest, RemovesFiniteIndexFromOmegaPlusFiniteSource) {
     EXPECT_EQ(node.value_at(Ordinal(10)), 11);
 
     
-    EXPECT_EQ(node.value_at(omega_plus(0)), 1000);
-    EXPECT_EQ(node.value_at(omega_plus(1)), 1001);
-    EXPECT_EQ(node.value_at(omega_plus(2)), 1002);
+    EXPECT_EQ(node.value_at(Ordinal(1,0)), 1000);
+    EXPECT_EQ(node.value_at(Ordinal(1,1)), 1001);
+    EXPECT_EQ(node.value_at(Ordinal(1,2)), 1002);
 }
 
 TEST(RemoveAtNodeTest, RemovesElementFromFiniteTailAfterOmega) {
-    FunctionGenerator<int> left_gen(identity_value, Ordinal::omega());
+    FunctionGenerator<int> left_gen(identity_function, Ordinal::omega());
     SourceNode<int> left(left_gen);
 
-    FunctionGenerator<int> right_gen(tail_value, Ordinal(3));
+    FunctionGenerator<int> right_gen(plus_1000_function, Ordinal(3));
     SourceNode<int> right(right_gen);
 
     ConcatNode<int> source(left, right);
-    RemoveAtNode<int> node(source, omega_plus(1));
+    RemoveAtNode<int> node(source, Ordinal(1,1));
 
     expect_ordinal_eq(node.length(), 1, 2);
 
     EXPECT_EQ(node.value_at(Ordinal(0)), 0);
     EXPECT_EQ(node.value_at(Ordinal(10)), 10);
 
-    EXPECT_EQ(node.value_at(omega_plus(0)), 1000);
-    EXPECT_EQ(node.value_at(omega_plus(1)), 1002);
+    EXPECT_EQ(node.value_at(Ordinal(1,0)), 1000);
+    EXPECT_EQ(node.value_at(Ordinal(1,1)), 1002);
 
     EXPECT_THROW({
-        node.value_at(omega_plus(2));
+        node.value_at(Ordinal(1,2));
     }, std::out_of_range);
 }
 
 TEST(RemoveAtNodeTest, RemovesLastElementFromFiniteTailAfterOmega) {
-    FunctionGenerator<int> left_gen(identity_value, Ordinal::omega());
+    FunctionGenerator<int> left_gen(identity_function, Ordinal::omega());
     SourceNode<int> left(left_gen);
 
-    FunctionGenerator<int> right_gen(tail_value, Ordinal(3));
+    FunctionGenerator<int> right_gen(plus_1000_function, Ordinal(3));
     SourceNode<int> right(right_gen);
 
     ConcatNode<int> source(left, right);
-    RemoveAtNode<int> node(source, omega_plus(2));
+    RemoveAtNode<int> node(source, Ordinal(1,2));
 
     expect_ordinal_eq(node.length(), 1, 2);
 
-    EXPECT_EQ(node.value_at(omega_plus(0)), 1000);
-    EXPECT_EQ(node.value_at(omega_plus(1)), 1001);
+    EXPECT_EQ(node.value_at(Ordinal(1,0)), 1000);
+    EXPECT_EQ(node.value_at(Ordinal(1,1)), 1001);
 
     EXPECT_THROW({
-        node.value_at(omega_plus(2));
+        node.value_at(Ordinal(1,2));
     }, std::out_of_range);
 }
 
 TEST(RemoveAtNodeTest, ConstructorThrowsWhenIndexEqualsOmegaPlusFiniteLength) {
-    FunctionGenerator<int> left_gen(identity_value, Ordinal::omega());
+    FunctionGenerator<int> left_gen(identity_function, Ordinal::omega());
     SourceNode<int> left(left_gen);
 
-    FunctionGenerator<int> right_gen(tail_value, Ordinal(3));
+    FunctionGenerator<int> right_gen(plus_1000_function, Ordinal(3));
     SourceNode<int> right(right_gen);
 
     ConcatNode<int> source(left, right);
 
     EXPECT_THROW({
-        RemoveAtNode<int> node(source, omega_plus(3));
+        RemoveAtNode<int> node(source, Ordinal(1,3));
     }, std::out_of_range);
 }
 
@@ -198,7 +188,7 @@ TEST(RemoveAtNodeTest, OwnsIndependentCloneOfSource) {
     RemoveAtNode<int>* node = nullptr;
 
     {
-        FunctionGenerator<int> gen(identity_value, Ordinal(6));
+        FunctionGenerator<int> gen(identity_function, Ordinal(6));
         SourceNode<int> source(gen);
 
         node = new RemoveAtNode<int>(source, Ordinal(2));
@@ -220,7 +210,7 @@ TEST(RemoveAtNodeTest, CopyConstructorCreatesIndependentCopy) {
     RemoveAtNode<int>* copy = nullptr;
 
     {
-        FunctionGenerator<int> gen(identity_value, Ordinal(6));
+        FunctionGenerator<int> gen(identity_function, Ordinal(6));
         SourceNode<int> source(gen);
 
         RemoveAtNode<int> original(source, Ordinal(2));
@@ -245,7 +235,7 @@ TEST(RemoveAtNodeTest, CloneCreatesIndependentCopy) {
     RemoveAtNode<int>* cloned = nullptr;
 
     {
-        FunctionGenerator<int> gen(identity_value, Ordinal(6));
+        FunctionGenerator<int> gen(identity_function, Ordinal(6));
         SourceNode<int> source(gen);
 
         RemoveAtNode<int> original(source, Ordinal(2));
@@ -267,16 +257,14 @@ TEST(RemoveAtNodeTest, CloneCreatesIndependentCopy) {
 }
 
 TEST(RemoveAtNodeTest, AssignmentOperatorCopiesSourceIndexAndLength) {
-    FunctionGenerator<int> gen1(identity_value, Ordinal(6));
+    FunctionGenerator<int> gen1(identity_function, Ordinal(6));
     SourceNode<int> source1(gen1);
 
     RemoveAtNode<int> first(source1, Ordinal(2));
     // first = [0, 1, 3, 4, 5]
 
     FunctionGenerator<int> gen2(
-        [](std::size_t index) {
-            return static_cast<int>(1000 + index);
-        },
+        plus_1000_function,
         Ordinal(6)
     );
     SourceNode<int> source2(gen2);
@@ -299,10 +287,7 @@ TEST(RemoveAtNodeTest, RepeatedAccessUsesSourceCache) {
     int call_count = 0;
 
     FunctionGenerator<int> gen(
-        [&call_count](std::size_t index) {
-            ++call_count;
-            return static_cast<int>(100 + index * 10);
-        },
+        CountingFunction(call_count, linear_function),
         Ordinal(20)
     );
 
@@ -333,10 +318,7 @@ TEST(RemoveAtNodeTest, ClonePreservesAlreadyMaterializedCache) {
     int call_count = 0;
 
     FunctionGenerator<int> gen(
-        [&call_count](std::size_t index) {
-            ++call_count;
-            return static_cast<int>(100 + index * 10);
-        },
+        CountingFunction(call_count, linear_function),
         Ordinal(20)
     );
 

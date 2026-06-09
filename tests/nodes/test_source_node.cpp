@@ -3,18 +3,8 @@
 #include "nodes/source_node.hpp"
 #include "generators/function_generator.hpp"
 #include "core/ordinal.hpp"
-
-static int identity_function(std::size_t index) {
-    return static_cast<int>(index);
-}
-
-static int plus_10_function(std::size_t index) {
-    return static_cast<int>(index + 10);
-}
-
-static int square_function(std::size_t index) {
-    return static_cast<int>(index * index);
-}
+#include "utils/generator_functions.hpp"
+#include "helpers/call_counter.hpp"
 
 TEST(SourceNodeTest, ReturnsLength) {
     FunctionGenerator<int> gen(
@@ -44,10 +34,7 @@ TEST(SourceNodeTest, ReusesCachedValue) {
     int calls = 0;
 
     FunctionGenerator<int> gen(
-        [&calls](std::size_t i) {
-            ++calls;
-            return static_cast<int>(i);
-        },
+        CountingFunction(calls, identity_function),
         Ordinal(10)
     );
 
@@ -68,10 +55,7 @@ TEST(SourceNodeTest, ExtendsCacheOnlyWhenNeeded) {
     int calls = 0;
 
     FunctionGenerator<int> gen(
-        [&calls](std::size_t i) {
-            ++calls;
-            return static_cast<int>(i);
-        },
+        CountingFunction(calls, identity_function),
         Ordinal(10)
     );
 
@@ -126,10 +110,7 @@ TEST(SourceNodeTest, CloneCopiesCache) {
     int calls = 0;
 
     FunctionGenerator<int> gen(
-        [&calls](std::size_t i) {
-            ++calls;
-            return static_cast<int>(i);
-        },
+        CountingFunction(calls, identity_function),
         Ordinal(10)
     );
 
@@ -151,10 +132,7 @@ TEST(SourceNodeTest, CloneCopiesGeneratorState) {
     int calls = 0;
 
     FunctionGenerator<int> gen(
-        [&calls](std::size_t i) {
-            ++calls;
-            return static_cast<int>(i);
-        },
+        CountingFunction(calls, identity_function),
         Ordinal(10)
     );
 
@@ -177,10 +155,7 @@ TEST(SourceNodeTest, CloneIsIndependentFromOriginal) {
     int calls = 0;
 
     FunctionGenerator<int> gen(
-        [&calls](std::size_t i) {
-            ++calls;
-            return static_cast<int>(i);
-        },
+        CountingFunction(calls, identity_function),
         Ordinal(10)
     );
 
