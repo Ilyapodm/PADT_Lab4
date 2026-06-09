@@ -37,7 +37,7 @@ LazySequence<T>::LazySequence() {
 template <typename T>
 LazySequence<T>::LazySequence(const T* items, int count) {
     if (count < 0)
-        throw std::invalid_argument("LazySequence<T>::LazySequence() count of elements must be non-negative");
+        throw std::invalid_argument("LazySequence<T>::LazySequence(): count of elements must be non-negative");
     if (count > 0 && items == nullptr)
         throw std::invalid_argument("LazySequence<T>::LazySequence(): count is positive and items is nullptr");
     if (count == 0) {
@@ -118,7 +118,7 @@ const T& LazySequence<T>::get_first() const {
 template <typename T>
 const T& LazySequence<T>::get_last() const {
     if (root_node_->length().get_finite_part() <= 0)
-        throw std::logic_error("The sequence does't have the end, can't return last item");
+        throw std::logic_error("LazySequence<T>::get_last: The sequence does't have the end, can't return last item");
     return root_node_->value_at(root_node_->length().get_last_index());
 }
 
@@ -126,7 +126,7 @@ const T& LazySequence<T>::get_last() const {
 template <typename T>
 const T& LazySequence<T>::get(int index) const {
     if (index < 0)
-        throw std::out_of_range("LazySequence: index must be positive");
+        throw std::out_of_range("LazySequence<T>::get: index must be positive");
     
     return get(Ordinal(index));
 }
@@ -151,9 +151,9 @@ int LazySequence<T>::get_size() const {
     if (root_node_->length().is_finite())
         return root_node_->length().get_finite_part();
     if (root_node_->length().get_finite_part() > static_cast<std::size_t>(std::numeric_limits<int>::max())) 
-        throw std::overflow_error("LazySequence size is too large for int");
+        throw std::overflow_error("LazySequence<T>::get_size: LazySequence size is too large for int");
     
-    throw std::logic_error("The sequence is infinite, can't express the size through 'int' value");
+    throw std::logic_error("LazySequence<T>::get_size: The sequence is infinite, can't express the size through 'int' value");
 }
 
 template <typename T>
@@ -183,7 +183,7 @@ LazySequence<T>* LazySequence<T>::prepend(const T &item) {
 }
 
 
-// for overload, index is finite
+// ----- for overload, index is finite -----
 template <typename T>
 LazySequence<T>* LazySequence<T>::insert_at(const T &item, int index) {
     if (index < 0)
@@ -230,7 +230,7 @@ LazySequence<T>* LazySequence<T>::concat(const Sequence<T>& list) const {
 }
 
 
-// true lazy seq interface, index is Ordinal
+// ----- true lazy seq interface, index is Ordinal -----
 template <typename T>
 LazySequence<T>* LazySequence<T>::insert_at(const T &item, const Ordinal& index) {
     return new LazySequence(new InsertAtNode<T>(*root_node_, item, index));
@@ -249,9 +249,9 @@ LazySequence<T>* LazySequence<T>::remove_at(const Ordinal& index) {
 template <typename T>
 LazySequence<T>* LazySequence<T>::get_subsequence(const Ordinal& start_index, const Ordinal& end_index_exclusive) const {
     if (start_index > end_index_exclusive)
-        throw std::out_of_range("start index is bigger than end index");
+        throw std::out_of_range("LazySequence<T>::get_subsequence: start index is bigger than end index");
     if (end_index_exclusive > root_node_->length())
-        throw std::invalid_argument("end index is biggeer than the length of the source");
+        throw std::invalid_argument("LazySequence<T>::get_subsequence: end index is biggeer than the length of the source");
     return new LazySequence(new SubsequenceNode<T>(*root_node_, start_index, end_index_exclusive));
 }
 
@@ -260,26 +260,28 @@ LazySequence<T>* LazySequence<T>::concat(const LazySequence<T>& other) const {
     return new LazySequence<T>(new ConcatNode<T>(*root_node_, *other.root_node_));
 }
 
-// TODO implement it later
+// ----------------------------------------------------------------------------
 // map, where, reduce
+// ----------------------------------------------------------------------------
+
 template <typename T>
 Sequence<T>* LazySequence<T>::map(T (*mapper)(const T& element)) {
-    throw std::logic_error("Not implemented");
+    throw std::logic_error("LazySequence<T>::map: Not implemented");
 }
 
 template <typename T>
 Sequence<T>* LazySequence<T>::where(bool (*predicate)(const T& element)) {
-    throw std::logic_error("Not implemented");
+    throw std::logic_error("LazySequence<T>::where: Not implemented");
 }
 
 template <typename T>
 T LazySequence<T>::reduce(T (*reduce_func)(const T& first_element, const T& second_element), const T& start_element) {
-    throw std::logic_error("Not implemented");
+    throw std::logic_error("LazySequence<T>::reduce: Not implemented");
 }
 
 template <typename T>
 Sequence<T>* LazySequence<T>::slice(int index, int count, const Sequence<T> &seq) {
-    throw std::logic_error("Not implemented");
+    throw std::logic_error("LazySequence<T>::slice: Not implemented");
 }
 
 // ----------------------------------------------------------------------------
@@ -300,7 +302,6 @@ LazySequence<T>::LazySequenceEnumerator::LazySequenceEnumerator(const Node<T>* r
 template <typename T>
 bool LazySequence<T>::LazySequenceEnumerator::move_next() {
     ++index_;
-
     return Ordinal(index_) < root_node_->length();
 }
 

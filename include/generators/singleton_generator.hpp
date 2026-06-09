@@ -17,7 +17,7 @@ public:
 
     T get_next() override {
         if (!has_next()) {
-            throw std::out_of_range("Generator is exhausted");
+            throw std::out_of_range("SingletonGenerator<T>::get_next: Generator is exhausted");
         }
 
         is_exhausted_ = true;

@@ -16,7 +16,7 @@ public:
     // "Public interface with all checks is not virtual, the realization is specific and thus virtual"
     const T& value_at(const Ordinal& index) const {
         if (index >= length()) 
-            throw std::out_of_range("Node index out of range");
+            throw std::out_of_range("Node<T>::value_at: index out of range");
         
         return value_at_impl(index);
     }

@@ -57,14 +57,14 @@ public:
 protected:
     const T& value_at_impl(const Ordinal& index) const override {
         if (!index.is_finite()) {
-            throw std::logic_error("SourceNode cannot materialize transfinite local index");
+            throw std::logic_error("SourceNode<T>::value_at_impl: Cannot materialize transfinite local index");
         }
 
         std::size_t finite_index = index.get_finite_part();
 
         while (cache_.get_size() <= finite_index) {
             if (!generator_->has_next()) {
-                throw std::out_of_range("Generator is exhausted");
+                throw std::out_of_range("SourceNode<T>::value_at_impl: Generator is exhausted");
             }
 
             cache_.append(generator_->get_next());

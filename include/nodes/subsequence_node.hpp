@@ -14,10 +14,10 @@ public:
         end_exclusive_(end_exclusive)
     {
         if (start > end_exclusive)  // if start == end exclusive -> length = 0 
-            throw std::invalid_argument("start index is bigger than end index");
+            throw std::invalid_argument("SubsequenceNode<T>::SubsequenceNode: Start index is bigger than end index");
 
         if (end_exclusive > source.length())
-            throw std::invalid_argument("end index is biggeer than the length of the source");
+            throw std::invalid_argument("SubsequenceNode<T>::SubsequenceNode: End index is biggeer than the length of the source");
     
 
         length_ = end_exclusive.subtract_prefix(start);

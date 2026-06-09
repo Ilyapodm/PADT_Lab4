@@ -14,7 +14,7 @@ public:
     }
 
     T get_next() override {
-        throw std::logic_error("There is no next element in EmptyGenerator"); 
+        throw std::logic_error("EmptyGenerator<T>::get_next: There is no next element in EmptyGenerator"); 
     }
 
     Ordinal length() const override {

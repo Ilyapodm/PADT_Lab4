@@ -34,7 +34,7 @@ public:
         delete iter;
     }
 
-    SequenceGenerator(const T* items, int count) : source_(make_source(items, count)) {}
+    SequenceGenerator(const T* items, int count) : source_(make_source_(items, count)) {}
 
     explicit SequenceGenerator(const MutableArraySequence<T>& other) : source_(other) {}
 
@@ -44,7 +44,7 @@ public:
 
     T get_next() override {
         if (!has_next()) {
-            throw std::out_of_range("Generator is exhausted");
+            throw std::out_of_range("SequenceGenerator<T>::get_next: Generator is exhausted");
         }
 
         return source_.get(static_cast<int>(index_++));
@@ -63,13 +63,13 @@ private:
     std::size_t index_ = 0;
 
     // helper to initialize, not transform already existing 'source_'
-    static MutableArraySequence<T> make_source(const T* items, int count) {
+    static MutableArraySequence<T> make_source_(const T* items, int count) {
         if (count < 0) {
-            throw std::invalid_argument("SequenceGenerator: size cannot be negative");
+            throw std::invalid_argument("SequenceGenerator<T>::make_source_: size cannot be negative");
         }
 
         if (items == nullptr && count > 0) {
-            throw std::invalid_argument("SequenceGenerator: items is nullptr");
+            throw std::invalid_argument("SequenceGenerator<T>::make_source_: items is nullptr");
         }
 
         if (count == 0) {

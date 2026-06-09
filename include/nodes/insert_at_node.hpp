@@ -14,7 +14,7 @@ public:
         index_(index)
     {
         if (index > source.length())
-            throw std::out_of_range("InsertAtNode index out of range");
+            throw std::out_of_range("InsertAtNode<T>::InsertAtNode: index out of range");
 
         source_ = source.clone();
 

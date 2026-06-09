@@ -8,11 +8,6 @@
 #include "core/ordinal.hpp"
 #include "adt/ring_buffer.hpp"
 
-// TODO доделать до конца эту хуйню
-// Запушить, доделать тесты с рек геном для лэйзи
-// Быстренько потоки бам бум
-// быстро свой генератор
-
 template <typename T>
 class RecurrenceGenerator : public Generator<T> {
 private:
@@ -132,7 +127,7 @@ public:
 
     T get_next() override {
         if (!has_next()) {
-            throw std::out_of_range("Generator is exhausted");
+            throw std::out_of_range("RecurrenceGenerator<T>::get_next: Generator is exhausted");
         }
 
         // need to return the beginning (initial values) of the seq

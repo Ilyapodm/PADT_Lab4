@@ -13,7 +13,7 @@ public:
         index_(index)
     {
         if (index >= source.length())
-            throw std::out_of_range("RemoveAtNode index out of range");
+            throw std::out_of_range("RemoveAtNode<T>::RemoveAtNode: index out of range");
 
         source_ = source.clone();
 

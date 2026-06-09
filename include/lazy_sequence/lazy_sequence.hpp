@@ -45,8 +45,8 @@ public:
     std::size_t get_materialized_count() const;
 
     // Operations: immutable, user has to delete
-    LazySequence<T>* append(const T &item)  override;
-    LazySequence<T>* prepend(const T &item)  override;
+    LazySequence<T>* append(const T &item) override;
+    LazySequence<T>* prepend(const T &item) override;
 
     // for overriding, index is finite
     LazySequence<T>* insert_at(const T &item, int index) override;

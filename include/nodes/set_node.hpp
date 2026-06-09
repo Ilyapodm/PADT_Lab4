@@ -14,7 +14,7 @@ public:
         index_(index)
     {
         if (index >= source.length())
-            throw std::out_of_range("SetNode index out of range");
+            throw std::out_of_range("SetNode<T>::SetNode: index out of range");
         
         source_ = source.clone();
     }

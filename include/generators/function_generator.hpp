@@ -13,9 +13,9 @@ class FunctionGenerator : public Generator<T> {
 public:
     FunctionGenerator(std::function<T(std::size_t)> func, Ordinal length) : length_{length}, func_{func} {
         if (!func_)
-            throw std::invalid_argument("FunctionGenerator's function is null");
+            throw std::invalid_argument("FunctionGenerator<T>::FunctionGenerator: Function is null");
         if (length.get_omega_coeff() > 1 || (length.get_omega_coeff() == 1 && length.get_finite_part() != 0)) {
-            throw std::invalid_argument("FunctionGenerator length must be finite or omega");
+            throw std::invalid_argument("FunctionGenerator<T>::FunctionGenerator: Length must be finite or omega");
         }
     } 
 
@@ -27,7 +27,7 @@ public:
 
     T get_next() override {
         if (!has_next()) {
-            throw std::out_of_range("Generator is exhausted");
+            throw std::out_of_range("FunctionGenerator<T>::get_next: Generator is exhausted");
         }
 
         return func_(index_++);
