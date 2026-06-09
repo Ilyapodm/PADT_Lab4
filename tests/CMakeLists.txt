@@ -23,6 +23,7 @@ add_subdirectory(generators)
 add_subdirectory(nodes)
 add_subdirectory(lazy_sequence)
 add_subdirectory(streams)
+add_subdirectory(helpers)
 # add_subdirectory(smart_data)
 
 include(GoogleTest)
