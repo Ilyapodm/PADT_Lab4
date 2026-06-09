@@ -11,7 +11,7 @@ public:
     virtual bool is_end_of_stream() const = 0;
 
     // reads current item and moves stream position forward
-    virtual T input() = 0;
+    virtual T input() = 0;  // don't use const T&, because of possible temprorary items
 
     // returns number of already read items
     virtual std::size_t get_position() const = 0;
@@ -25,9 +25,12 @@ public:
     // returns true if stream can move back to previous positions
     virtual bool can_go_back() const = 0;
 
-    // prepares stream for reading
+    // open the stream for reading
     virtual void open() = 0;
 
     // closes stream for reading
     virtual void close() = 0;
+
+    // resets the stream
+    virtual void reset() = 0;
 };

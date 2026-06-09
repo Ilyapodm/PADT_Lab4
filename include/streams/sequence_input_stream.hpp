@@ -6,24 +6,22 @@
 #include "input_stream.hpp"
 #include "adt_lab_2/sequence.hpp"
 #include "adt_lab_2/ienumerator.hpp"
+#include "adt_lab_2/option.hpp"
 
 template <typename T>
 class SequenceInputStream : public InputStream<T> {
 public:
-    explicit SequenceInputStream(Sequence<T>* source) :
+    explicit SequenceInputStream(const Sequence<T>* source) :
         source_(source),
         iterator_(nullptr),
-        buffered_item_(nullptr),
         position_(0),
         is_open_(false)
     {
         if (source_ == nullptr) 
-            throw std::invalid_argument("sequence input stream source is null");
-        
-        open();
+            throw std::invalid_argument("SequenceInputStream<T>::SequenceInputStream: Sequence source is null");
     }
 
-    explicit SequenceInputStream(Sequence<T>& source) : SequenceInputStream(&source) {}
+    explicit SequenceInputStream(const Sequence<T>& source) : SequenceInputStream(&source) {}
 
     SequenceInputStream(const SequenceInputStream<T>& other) = delete;
 
@@ -36,7 +34,7 @@ public:
     // returns true if stream has no more items
     bool is_end_of_stream() const override {
         ensure_open();
-        return buffered_item_ == nullptr;
+        return !buffered_item_.has_value();
     }
 
     // reads current item and moves stream position forward
@@ -44,12 +42,12 @@ public:
         ensure_open();
 
         if (is_end_of_stream()) {
-            throw std::out_of_range("end of stream");
+            throw std::out_of_range("SequenceInputStream<T>::input: End of stream");
         }
 
-        T result = *buffered_item_;
+        T result = buffered_item_.get_value();
 
-        clear_buffer();
+        //clear_buffer();
         ++position_;
         load_next();
 
@@ -70,18 +68,19 @@ public:
     std::size_t seek(std::size_t index) override {
         ensure_open();
 
-        iterator_->reset();
-        clear_buffer();
+        // don't have to reset, can move forward
+        if (index < position_) {
+            iterator_->reset();
+            position_ = 0;
+            load_next();
+        }
 
-        position_ = 0;
-        load_next();
 
         while (position_ < index) {
-            if (buffered_item_ == nullptr) {
-                throw std::out_of_range("seek position is out of stream");
+            if (!buffered_item_.has_value()) {
+                throw std::out_of_range("SequenceInputStream<T>::seek: position is out of stream");
             }
 
-            clear_buffer();
             ++position_;
             load_next();
         }
@@ -94,62 +93,67 @@ public:
         return true;
     }
 
-    // opens stream and resets position to start
+    // NOTE: user have to open the stream, it doesn't open automatically
     void open() override {
-        close();
+        if (is_open_)
+            throw std::logic_error("SequenceInputStream<T>::open(): The stream is already open");
 
         iterator_ = source_->get_enumerator();
 
-        if (iterator_ == nullptr) {
-            throw std::runtime_error("sequence enumerator is null");
-        }
-
+        if (iterator_ == nullptr) 
+            throw std::runtime_error("SequenceInputStream<T>::open(): Sequence enumerator is null");
+        
         position_ = 0;
         is_open_ = true;
 
         load_next();
     }
 
-    // closes stream and releases enumerator
     void close() override {
-        clear_buffer();
-
         delete iterator_;
         iterator_ = nullptr;
+
+        buffered_item_ = Option<T>();
 
         is_open_ = false;
     }
 
+    void reset() override {
+        ensure_open();
+
+        iterator_->reset();
+        position_ = 0;
+
+        buffered_item_ = Option<T>();
+
+        load_next();
+    }
+
 private:
-    Sequence<T>* source_;
+    const Sequence<T>* source_;
     IEnumerator<T>* iterator_;
-    T* buffered_item_;
-    std::size_t position_;
+
+    // need buffered item, because work with iterator with 'move_next', so can't understand, when it is the end of stream
+    Option<T> buffered_item_;  
+    std::size_t position_;  // count of already read elements
     bool is_open_;
 
     // checks that stream is open
     void ensure_open() const {
-        if (!is_open_) {
-            throw std::logic_error("stream is closed");
-        }
-    }
-
-    // deletes buffered item
-    void clear_buffer() {
-        delete buffered_item_;
-        buffered_item_ = nullptr;
+        if (!is_open_) 
+            throw std::logic_error("SequenceInputStream<T>::ensure_open: the stream is closed");
     }
 
     // loads next item from enumerator to buffer
     void load_next() {
         if (iterator_ == nullptr) {
-            throw std::logic_error("stream iterator is null");
+            throw std::logic_error("SequenceInputStream<T>::load_next: stream iterator is null");
         }
 
-        if (iterator_->move_next()) {
-            buffered_item_ = new T(iterator_->get_current());
-        } else {
-            buffered_item_ = nullptr;
-        }
+        if (iterator_->move_next()) 
+            buffered_item_ = Option<T>(iterator_->get_current());
+        
+        else 
+            buffered_item_ = Option<T>();     
     }
 };
