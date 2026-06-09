@@ -36,7 +36,7 @@ public:
     const T& get(int index) const override;  // only finite indexes
     const T& get(Ordinal index) const;  // for Ordinal indexes
 
-    //Option<T> try_get(Ordinal index) const;
+    Option<T> try_get(Ordinal index) const;
     // 'try_get_first', 'try_get_last', 'try_get(int)' with Option<T> return 
     // delegates to 'get_first', 'get_last', 'get' in Sequence, so here need only try_get(Ordinal)
 

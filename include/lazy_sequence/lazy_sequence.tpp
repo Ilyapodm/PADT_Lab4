@@ -136,7 +136,14 @@ const T& LazySequence<T>::get(Ordinal index) const {
     return root_node_->value_at(index);
 }
 
-// try_... with Option<T> return delegates to get_first, get_last, get
+template <typename T>
+Option<T> LazySequence<T>::try_get(Ordinal index) const {
+    try {
+        return Option<T>::Some(root_node_->value_at(index));
+    } catch (const std::out_of_range&) {
+        return Option<T>::None();
+    }
+}
 
 // for overload, only finite values 
 template <typename T>

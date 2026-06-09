@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <functional>
 #include <stdexcept>
 
 #include "lazy_sequence/lazy_sequence.hpp"
@@ -6,6 +7,11 @@
 #include "adt_lab_2/list_sequence.hpp"
 #include "core/ordinal.hpp"
 #include "adt/ring_buffer.hpp"
+#include "utils/generator_functions.hpp"
+
+// ----------------------------------------------------------------------------
+// Constructors
+// ----------------------------------------------------------------------------
 
 TEST(LazySequenceTest, DefaultConstructorCreatesEmptySequence) {
     LazySequence<int> seq;
@@ -113,9 +119,7 @@ TEST(LazySequenceTest, ConstructorFromSequenceMakesSnapshot) {
 
 TEST(LazySequenceTest, ConstructsFromFunctionWithFiniteLength) {
     LazySequence<int> seq(
-        [](std::size_t index) {
-            return static_cast<int>(index * index);
-        },
+        square_function,
         Ordinal(5)
     );
 
@@ -133,9 +137,7 @@ TEST(LazySequenceTest, ConstructsFromFunctionWithFiniteLength) {
 
 TEST(LazySequenceTest, FunctionSequenceCanBeInfinite) {
     LazySequence<int> seq(
-        [](std::size_t index) {
-            return static_cast<int>(index + 100);
-        },
+        plus_100_function,
         Ordinal(1, 0)
     );
 
@@ -147,15 +149,14 @@ TEST(LazySequenceTest, FunctionSequenceCanBeInfinite) {
     EXPECT_THROW(seq.get_last(), std::logic_error);
 }
 
+// ----------------------------------------------------------------------------
+// Recurrence constructors
+// ----------------------------------------------------------------------------
+
 TEST(LazySequenceRecurrenceTest, ConstructsFibonacciUsingRingBufferRule) {
     int initial[] = {0, 1};
 
-    std::function<int(const RingBuffer<int>&)> rule =
-        [](const RingBuffer<int>& window) {
-            return window.get(0) + window.get(1);
-        };
-
-    LazySequence<int> seq(rule, initial, 2, Ordinal(8));
+    LazySequence<int> seq(fibonacci_ring_rule, initial, 2, Ordinal(8));
 
     EXPECT_EQ(seq.get_ordinal_length(), Ordinal(8));
     EXPECT_EQ(seq.get_size(), 8);
@@ -175,12 +176,7 @@ TEST(LazySequenceRecurrenceTest, ConstructsFibonacciUsingRingBufferRule) {
 TEST(LazySequenceRecurrenceTest, ConstructsTribonacciUsingRingBufferRule) {
     int initial[] = {0, 1, 1};
 
-    std::function<int(const RingBuffer<int>&)> rule =
-        [](const RingBuffer<int>& window) {
-            return window.get(0) + window.get(1) + window.get(2);
-        };
-
-    LazySequence<int> seq(rule, initial, 3, Ordinal(8));
+    LazySequence<int> seq(tribonacci_ring_Rule, initial, 3, Ordinal(8));
 
     EXPECT_EQ(seq.get_ordinal_length(), Ordinal(8));
     EXPECT_EQ(seq.get_size(), 8);
@@ -198,12 +194,7 @@ TEST(LazySequenceRecurrenceTest, ConstructsTribonacciUsingRingBufferRule) {
 TEST(LazySequenceRecurrenceTest, ConstructsFibonacciUsingArrayRule) {
     int initial[] = {0, 1};
 
-    std::function<int(const int*, std::size_t)> rule =
-        [](const int* window, std::size_t count) {
-            return window[count - 2] + window[count - 1];
-        };
-
-    LazySequence<int> seq(rule, initial, 2, Ordinal(8));
+    LazySequence<int> seq(fibonacci_array_rule, initial, 2, Ordinal(8));
 
     EXPECT_EQ(seq.get_ordinal_length(), Ordinal(8));
     EXPECT_EQ(seq.get_size(), 8);
@@ -223,12 +214,7 @@ TEST(LazySequenceRecurrenceTest, ConstructsFibonacciUsingArrayRule) {
 TEST(LazySequenceRecurrenceTest, ConstructsTribonacciUsingArrayRule) {
     int initial[] = {0, 1, 1};
 
-    std::function<int(const int*, std::size_t)> rule =
-        [](const int* window, std::size_t count) {
-            return window[count - 3] + window[count - 2] + window[count - 1];
-        };
-
-    LazySequence<int> seq(rule, initial, 3, Ordinal(8));
+    LazySequence<int> seq(tribonacci_array_rule, initial, 3, Ordinal(8));
 
     EXPECT_EQ(seq.get_ordinal_length(), Ordinal(8));
     EXPECT_EQ(seq.get_size(), 8);
@@ -246,12 +232,7 @@ TEST(LazySequenceRecurrenceTest, ConstructsTribonacciUsingArrayRule) {
 TEST(LazySequenceRecurrenceTest, InfiniteRecurrenceSequenceSupportsFiniteIndexes) {
     int initial[] = {1, 1};
 
-    std::function<int(const RingBuffer<int>&)> rule =
-        [](const RingBuffer<int>& window) {
-            return window.get(0) + window.get(1);
-        };
-
-    LazySequence<int> seq(rule, initial, 2, Ordinal(1, 0));
+    LazySequence<int> seq(fibonacci_ring_rule, initial, 2, Ordinal(1, 0));
 
     EXPECT_EQ(seq.get_ordinal_length(), Ordinal(1, 0));
 
@@ -270,12 +251,7 @@ TEST(LazySequenceRecurrenceTest, InfiniteRecurrenceSequenceSupportsFiniteIndexes
 TEST(LazySequenceRecurrenceTest, MaterializedCountGrowsForRecurrenceSequence) {
     int initial[] = {0, 1};
 
-    std::function<int(const RingBuffer<int>&)> rule =
-        [](const RingBuffer<int>& window) {
-            return window.get(0) + window.get(1);
-        };
-
-    LazySequence<int> seq(rule, initial, 2, Ordinal(10));
+    LazySequence<int> seq(fibonacci_ring_rule, initial, 2, Ordinal(10));
 
     EXPECT_EQ(seq.get_materialized_count(), 0);
 
@@ -291,12 +267,7 @@ TEST(LazySequenceRecurrenceTest, MaterializedCountGrowsForRecurrenceSequence) {
 TEST(LazySequenceRecurrenceTest, InitialValuesAreCopiedForRingBufferRule) {
     int initial[] = {0, 1};
 
-    std::function<int(const RingBuffer<int>&)> rule =
-        [](const RingBuffer<int>& window) {
-            return window.get(0) + window.get(1);
-        };
-
-    LazySequence<int> seq(rule, initial, 2, Ordinal(6));
+    LazySequence<int> seq(fibonacci_ring_rule, initial, 2, Ordinal(6));
 
     initial[0] = 100;
     initial[1] = 200;
@@ -312,12 +283,7 @@ TEST(LazySequenceRecurrenceTest, InitialValuesAreCopiedForRingBufferRule) {
 TEST(LazySequenceRecurrenceTest, InitialValuesAreCopiedForArrayRule) {
     int initial[] = {0, 1};
 
-    std::function<int(const int*, std::size_t)> rule =
-        [](const int* window, std::size_t count) {
-            return window[count - 2] + window[count - 1];
-        };
-
-    LazySequence<int> seq(rule, initial, 2, Ordinal(6));
+    LazySequence<int> seq(fibonacci_array_rule, initial, 2, Ordinal(6));
 
     initial[0] = 100;
     initial[1] = 200;
@@ -333,12 +299,7 @@ TEST(LazySequenceRecurrenceTest, InitialValuesAreCopiedForArrayRule) {
 TEST(LazySequenceRecurrenceTest, OperationResultIsIndependentFromOriginalRecurrenceSequence) {
     int initial[] = {0, 1};
 
-    std::function<int(const RingBuffer<int>&)> rule =
-        [](const RingBuffer<int>& window) {
-            return window.get(0) + window.get(1);
-        };
-
-    LazySequence<int>* original = new LazySequence<int>(rule, initial, 2, Ordinal(6));
+    LazySequence<int>* original = new LazySequence<int>(fibonacci_ring_rule, initial, 2, Ordinal(6));
 
     EXPECT_EQ(original->get(4), 3);
 
@@ -362,25 +323,15 @@ TEST(LazySequenceRecurrenceTest, OperationResultIsIndependentFromOriginalRecurre
 }
 
 TEST(LazySequenceRecurrenceTest, ConstructorRejectsNullInitialValuesWithPositiveCountForRingBufferRule) {
-    std::function<int(const RingBuffer<int>&)> rule =
-        [](const RingBuffer<int>& window) {
-            return window.get(0) + window.get(1);
-        };
-
     EXPECT_THROW(
-        LazySequence<int> seq(rule, nullptr, 2, Ordinal(5)),
+        LazySequence<int> seq(fibonacci_ring_rule, nullptr, 2, Ordinal(5)),
         std::invalid_argument
     );
 }
 
 TEST(LazySequenceRecurrenceTest, ConstructorRejectsNullInitialValuesWithPositiveCountForArrayRule) {
-    std::function<int(const int*, std::size_t)> rule =
-        [](const int* window, std::size_t count) {
-            return window[count - 2] + window[count - 1];
-        };
-
     EXPECT_THROW(
-        LazySequence<int> seq(rule, nullptr, 2, Ordinal(5)),
+        LazySequence<int> seq(fibonacci_array_rule, nullptr, 2, Ordinal(5)),
         std::invalid_argument
     );
 }
@@ -407,6 +358,10 @@ TEST(LazySequenceRecurrenceTest, ConstructorRejectsNullRuleForArrayRule) {
     );
 }
 
+// ----------------------------------------------------------------------------
+// Materialization
+// ----------------------------------------------------------------------------
+
 TEST(LazySequenceTest, MaterializedCountStartsFromZeroForSourceNode) {
     int items[] = {10, 20, 30, 40};
     LazySequence<int> seq(items, 4);
@@ -426,6 +381,10 @@ TEST(LazySequenceTest, MaterializedCountGrowsAfterAccess) {
 
     EXPECT_EQ(seq.get_materialized_count(), 3);
 }
+
+// ----------------------------------------------------------------------------
+// Append
+// ----------------------------------------------------------------------------
 
 TEST(LazySequenceTest, AppendAddsItemToFiniteSequence) {
     int items[] = {1, 2, 3};
@@ -451,9 +410,7 @@ TEST(LazySequenceTest, AppendAddsItemToFiniteSequence) {
 
 TEST(LazySequenceTest, AppendToInfiniteSequencePlacesItemAtOmegaIndex) {
     LazySequence<int> seq(
-        [](std::size_t index) {
-            return static_cast<int>(index);
-        },
+        identity_function,
         Ordinal(1, 0)
     );
 
@@ -469,6 +426,10 @@ TEST(LazySequenceTest, AppendToInfiniteSequencePlacesItemAtOmegaIndex) {
 
     delete result;
 }
+
+// ----------------------------------------------------------------------------
+// Prepend
+// ----------------------------------------------------------------------------
 
 TEST(LazySequenceTest, PrependAddsItemToBeginning) {
     int items[] = {2, 3, 4};
@@ -494,9 +455,7 @@ TEST(LazySequenceTest, PrependAddsItemToBeginning) {
 
 TEST(LazySequenceTest, PrependToInfiniteSequenceDoesNotShiftTransfiniteIndex) {
     LazySequence<int> seq(
-        [](std::size_t index) {
-            return static_cast<int>(index * 10);
-        },
+        multiply_by_10_function,
         Ordinal(1, 0)
     );
 
@@ -512,6 +471,10 @@ TEST(LazySequenceTest, PrependToInfiniteSequenceDoesNotShiftTransfiniteIndex) {
 
     delete result;
 }
+
+// ----------------------------------------------------------------------------
+// Set
+// ----------------------------------------------------------------------------
 
 TEST(LazySequenceTest, SetReplacesOneElement) {
     int items[] = {10, 20, 30};
@@ -560,6 +523,10 @@ TEST(LazySequenceTest, SetRejectsOutOfRangeIndex) {
 
     EXPECT_THROW(seq.set(999, 3), std::exception);
 }
+
+// ----------------------------------------------------------------------------
+// InsertAt
+// ----------------------------------------------------------------------------
 
 TEST(LazySequenceTest, InsertAtBeginning) {
     int items[] = {20, 30};
@@ -629,6 +596,10 @@ TEST(LazySequenceTest, InsertAtRejectsIndexGreaterThanLength) {
 
     EXPECT_THROW(seq.insert_at(999, 3), std::exception);
 }
+
+// ----------------------------------------------------------------------------
+// RemoveAt
+// ----------------------------------------------------------------------------
 
 TEST(LazySequenceTest, RemoveAtBeginning) {
     int items[] = {10, 20, 30};
@@ -712,6 +683,10 @@ TEST(LazySequenceTest, RemoveAtFromSingleElementSequenceCreatesEmptySequence) {
     delete result;
 }
 
+// ----------------------------------------------------------------------------
+// Subsequence
+// ----------------------------------------------------------------------------
+
 TEST(LazySequenceTest, GetSubsequenceWithIntIndexesUsesInclusiveEnd) {
     int items[] = {10, 20, 30, 40, 50};
     LazySequence<int> seq(items, 5);
@@ -786,6 +761,10 @@ TEST(LazySequenceTest, GetSubsequenceRejectsOutOfRangeEnd) {
 }
 
 
+// ----------------------------------------------------------------------------
+// Concat
+// ----------------------------------------------------------------------------
+
 TEST(LazySequenceTest, ConcatWithLazySequence) {
     int left_items[] = {1, 2};
     int right_items[] = {3, 4, 5};
@@ -854,9 +833,7 @@ TEST(LazySequenceTest, ConcatWithMutableListSequence) {
 
 TEST(LazySequenceTest, ConcatWithOrdinalsInfinitePlusFinite) {
     LazySequence<int> infinite(
-        [](std::size_t index) {
-            return static_cast<int>(index);
-        },
+        identity_function,
         Ordinal(1, 0)
     );
 
@@ -878,6 +855,10 @@ TEST(LazySequenceTest, ConcatWithOrdinalsInfinitePlusFinite) {
 
     delete result;
 }
+
+// ----------------------------------------------------------------------------
+// Copying and independence
+// ----------------------------------------------------------------------------
 
 TEST(LazySequenceTest, CopyConstructorClonesRootNode) {
     int items[] = {10, 20, 30};
@@ -945,6 +926,84 @@ TEST(LazySequenceTest, OperationResultIsIndependentFromOriginalSequence) {
 
     delete result;
 }
+
+
+// ----------------------------------------------------------------------------
+// Option getters
+// ----------------------------------------------------------------------------
+
+TEST(LazySequenceOptionTest, TryGetFirstReturnsSomeForNonEmptySequence) {
+    int items[] = {10, 20, 30};
+    LazySequence<int> seq(items, 3);
+
+    Option<int> result = seq.try_get_first();
+
+    EXPECT_TRUE(result.has_value());
+    EXPECT_EQ(result.get_value(), 10);
+}
+
+TEST(LazySequenceOptionTest, TryGetFirstReturnsNoneForEmptySequence) {
+    LazySequence<int> seq;
+
+    Option<int> result = seq.try_get_first();
+
+    EXPECT_FALSE(result.has_value());
+    EXPECT_THROW(result.get_value(), std::runtime_error);
+}
+
+TEST(LazySequenceOptionTest, TryGetLastReturnsSomeForNonEmptySequence) {
+    int items[] = {10, 20, 30};
+    LazySequence<int> seq(items, 3);
+
+    Option<int> result = seq.try_get_last();
+
+    EXPECT_TRUE(result.has_value());
+    EXPECT_EQ(result.get_value(), 30);
+}
+
+TEST(LazySequenceOptionTest, TryGetReturnsSomeForValidIntIndex) {
+    int items[] = {10, 20, 30};
+    LazySequence<int> seq(items, 3);
+
+    Option<int> result = seq.try_get(Ordinal(1));
+
+    EXPECT_TRUE(result.has_value());
+    EXPECT_EQ(result.get_value(), 20);
+}
+
+TEST(LazySequenceOptionTest, TryGetReturnsNoneForOutOfRangeIntIndex) {
+    int items[] = {10, 20, 30};
+    LazySequence<int> seq(items, 3);
+
+    Option<int> result = seq.try_get(Ordinal(3));
+
+    EXPECT_FALSE(result.has_value());
+    EXPECT_THROW(result.get_value(), std::runtime_error);
+}
+
+TEST(LazySequenceOptionTest, TryGetReturnsSomeForValidOrdinalIndex) {
+    int items[] = {10, 20, 30};
+    LazySequence<int> seq(items, 3);
+
+    Option<int> result = seq.try_get(Ordinal(2));
+
+    EXPECT_TRUE(result.has_value());
+    EXPECT_EQ(result.get_value(), 30);
+}
+
+TEST(LazySequenceOptionTest, TryGetReturnsNoneForOutOfRangeOrdinalIndex) {
+    int items[] = {10, 20, 30};
+    LazySequence<int> seq(items, 3);
+
+    Option<int> result = seq.try_get(Ordinal(3));
+
+    EXPECT_FALSE(result.has_value());
+    EXPECT_THROW(result.get_value(), std::runtime_error);
+}
+
+// ----------------------------------------------------------------------------
+// Exceptions
+// ----------------------------------------------------------------------------
 
 TEST(LazySequenceTest, GetRejectsNegativeIndex) {
     int items[] = {10, 20};
