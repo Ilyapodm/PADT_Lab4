@@ -16,7 +16,7 @@ public:
     virtual bool is_open() const = 0;
 
     // prepares stream for writing
-    virtual void open() = 0;
+    virtual void open() = 0;  // NOTE: user have to open the stream, it doesn't open automatically
 
     // closes stream for writing
     virtual void close() = 0;

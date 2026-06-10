@@ -36,5 +36,3 @@ public:
     // resets the stream
     virtual void reset() = 0;
 };
-// TODO сделать отдельный output (корректная запись в конец)
-// TODO сделать файловые потоки

@@ -5,6 +5,7 @@
 #include "generator.hpp"
 #include "core/ordinal.hpp"
 
+// NOTE this generator is not used in this architecture, it's here 'just in case'
 template <typename T>
 class SingletonGenerator : public Generator<T> {
 public:

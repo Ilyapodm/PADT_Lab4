@@ -64,7 +64,6 @@ public:
     LazySequence<T>* get_subsequence(const Ordinal& start_index, const Ordinal& end_index_exclusive) const;
     LazySequence<T>* concat(const LazySequence<T>& other) const;
 
-    // TODO implement it later
     // map, where, reduce
     Sequence<T>* map(T (*mapper)(const T& element)) override;
     Sequence<T>* where(bool (*predicate)(const T& element)) override;

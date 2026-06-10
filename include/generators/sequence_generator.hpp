@@ -15,11 +15,13 @@ template <typename T>
 class SequenceGenerator : public Generator<T> {
 public:
     explicit SequenceGenerator(const Sequence<T>& source) {
-        // enumerator allows not to waste time through 'get',
-        // PERF: but we don't have enough access to dynamic array to allocate enough memory at once, and not doing: 'allocate more -> copy -> delete'
-        // as a decision: TODO: add 'reserve' to array_seq
-        // HACK: enumarator will not work with LazySequence, in 'concat' in LazySequence there is a validation for this case 
-        // btw, in general case mad can do: (Generator->Node->LazySequence) => SequenceGenerator (explosion)
+        // PERF: MutableArraySequence has no reserve(), so repeated append() may cause reallocations
+        // TODO: add reserve() to MutableArraySequence to allocate source.get_size() elements at once
+        
+        // HACK: the constructor accepts any Sequence<T>, but this snapshot model is valid only
+        // for finite, materializable sequences. Passing an infinite or ordinal LazySequence<T>
+        // would try to enumerate it as an ordinary finite sequence and may never finish.
+        // LazySequence concat code should validate this moment
         IEnumerator<T>* iter = source.get_enumerator();
 
         try{
