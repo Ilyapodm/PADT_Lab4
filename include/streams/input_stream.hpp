@@ -10,6 +10,8 @@ public:
     // returns true if stream has no more items
     virtual bool is_end_of_stream() const = 0;
 
+    virtual bool is_open() const = 0;
+
     // reads current item and moves stream position forward
     virtual T input() = 0;  // don't use const T&, because of possible temprorary items
 

@@ -63,6 +63,10 @@ public:
         return position_;
     }
 
+    bool is_open() const override {
+        return is_open_;
+    }
+
     // returns number of already written items
     std::size_t get_position() const override {
         ensure_open_();

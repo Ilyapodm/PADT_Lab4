@@ -64,6 +64,10 @@ public:
         return true;
     }
 
+    bool is_open() const override {
+        return is_open_;
+    }
+
     // moves stream to given position
     std::size_t seek(std::size_t index) override {
         ensure_open_();

@@ -13,6 +13,8 @@ public:
     // returns number of already written items
     virtual std::size_t get_position() const = 0;
 
+    virtual bool is_open() const = 0;
+
     // prepares stream for writing
     virtual void open() = 0;
 
