@@ -14,7 +14,7 @@ public:
         max_value_{max_value}
     {
         if (max_value < min_value) 
-            throw std::invalid_argument("UniformDistribution<T>::UniformDistribution: uniform distribution min value is greater than max value");
+            throw std::invalid_argument("UniformDistribution::UniformDistribution: uniform distribution min value is greater than max value");
         
     }
 

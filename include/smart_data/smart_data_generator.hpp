@@ -59,9 +59,9 @@ public:
     }
 
     int get_next() override {
-        if (!has_next()) {
-            throw std::out_of_range("SmartDataGenerator<int>::get_next: Generator reached end");
-        }
+        if (!has_next()) 
+            throw std::out_of_range("SmartDataGenerator::get_next: Generator reached end");
+        
 
         const int value = distribution_->next(engine_);
         ++index_;
@@ -98,13 +98,13 @@ private:
 
     static void validate_config(const SmartDataConfig& config) {
         if (config.length.get_omega_coeff() > 1 || (config.length.get_omega_coeff() == 1 && config.length.get_finite_part() != 0)) 
-            throw std::invalid_argument("SmartDataGenerator<int>::SmartDataGenerator: length must be finite or omega");
+            throw std::invalid_argument("SmartDataGenerator::SmartDataGenerator: length must be finite or omega");
         
         if (config.max_value < config.min_value) 
-            throw std::invalid_argument("SmartDataGenerator<int>::SmartDataGenerator: min value is greater than max value");
+            throw std::invalid_argument("SmartDataGenerator::SmartDataGenerator: min value is greater than max value");
         
         if (config.distribution_type == SmartDataDistributionType::Normal && config.standard_deviation <= 0.0) 
-            throw std::invalid_argument("SmartDataGenerator<int>::SmartDataGenerator: standard deviation must be positive");
+            throw std::invalid_argument("SmartDataGenerator::SmartDataGenerator: standard deviation must be positive");
     }
 
     static Distribution<int>* create_distribution(const SmartDataConfig& config) {
