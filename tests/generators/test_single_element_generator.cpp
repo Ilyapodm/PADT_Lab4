@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 #include <stdexcept>
 
-#include "generators/singleton_generator.hpp"
+#include "generators/single_element_generator.hpp"
 
-TEST(SingletonGeneratorTest, BasicBehavior) {
-    SingletonGenerator<int> generator(42);
+TEST(SingleElementGeneratorTest, BasicBehavior) {
+    SingleElementGenerator<int> generator(42);
 
     EXPECT_TRUE(generator.has_next());
 
@@ -18,8 +18,8 @@ TEST(SingletonGeneratorTest, BasicBehavior) {
 }
 
 
-TEST(SingletonGeneratorTest, ClonePreservesStateBeforeReading) {
-    SingletonGenerator<int> generator(42);
+TEST(SingleElementGeneratorTest, ClonePreservesStateBeforeReading) {
+    SingleElementGenerator<int> generator(42);
 
     Generator<int>* clone = generator.clone();
 
@@ -35,8 +35,8 @@ TEST(SingletonGeneratorTest, ClonePreservesStateBeforeReading) {
     delete clone;
 }
 
-TEST(SingletonGeneratorTest, ClonePreservesStateAfterReading) {
-    SingletonGenerator<int> generator(42);
+TEST(SingleElementGeneratorTest, ClonePreservesStateAfterReading) {
+    SingleElementGenerator<int> generator(42);
 
     EXPECT_EQ(generator.get_next(), 42);
     EXPECT_FALSE(generator.has_next());

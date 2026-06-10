@@ -5,12 +5,13 @@
 #include "generator.hpp"
 #include "core/ordinal.hpp"
 
+// single element generator
 // NOTE this generator is not used in this architecture, it's here 'just in case'
 template <typename T>
-class SingletonGenerator : public Generator<T> {
+class SingleElementGenerator : public Generator<T> {
 public:
 
-    explicit SingletonGenerator(const T& value) : value_(value) {}
+    explicit SingleElementGenerator(const T& value) : value_(value) {}
     
     bool has_next() const override {
         return !is_exhausted_;
@@ -18,7 +19,7 @@ public:
 
     T get_next() override {
         if (!has_next()) {
-            throw std::out_of_range("SingletonGenerator<T>::get_next: Generator is exhausted");
+            throw std::out_of_range("SingleElementGenerator<T>::get_next: Generator is exhausted");
         }
 
         is_exhausted_ = true;
@@ -29,8 +30,8 @@ public:
         return Ordinal(1);
     }
 
-    SingletonGenerator<T>* clone() const override {
-        return new SingletonGenerator<T>(*this);
+    SingleElementGenerator<T>* clone() const override {
+        return new SingleElementGenerator<T>(*this);
     }
 
 private:

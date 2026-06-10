@@ -2,7 +2,7 @@ target_sources(lab4_core
     INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/generator.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/empty_generator.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/singleton_generator.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/single_element_generator.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/sequence_generator.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/function_generator.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/recurrence_generator.hpp
