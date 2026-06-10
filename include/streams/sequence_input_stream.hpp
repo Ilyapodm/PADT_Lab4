@@ -97,7 +97,7 @@ public:
         return true;
     }
 
-    // NOTE: user have to open the stream, it doesn't open automatically
+
     void open() override {
         if (is_open_)
             throw std::logic_error("SequenceInputStream<T>::open(): The stream is already open");

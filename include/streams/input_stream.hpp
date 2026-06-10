@@ -28,7 +28,7 @@ public:
     virtual bool can_go_back() const = 0;
 
     // open the stream for reading
-    virtual void open() = 0;
+    virtual void open() = 0;  // NOTE: user have to open the stream, it doesn't open automatically
 
     // closes stream for reading
     virtual void close() = 0;
@@ -36,5 +36,5 @@ public:
     // resets the stream
     virtual void reset() = 0;
 };
-// TODO сделать отдельный output (корректная запись в конец) и input (ординальный сик) потоки для lazy sequence
+// TODO сделать отдельный output (корректная запись в конец)
 // TODO сделать файловые потоки

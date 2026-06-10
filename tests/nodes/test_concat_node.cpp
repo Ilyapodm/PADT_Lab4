@@ -219,7 +219,6 @@ TEST(ConcatNodeTest, FiniteOmegaRoutesFiniteIndexesCorrectly) {
     EXPECT_EQ(right_calls, 1);
 }
 
-// NOTE
 TEST(ConcatNodeTest, FiniteOmegaRoutesFarFiniteIndexToRightWithoutTouchingMoreLeft) {
     int left_calls = 0;
     int right_calls = 0;
