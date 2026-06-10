@@ -4,5 +4,6 @@ target_sources(lab4_core
         ${CMAKE_CURRENT_SOURCE_DIR}/output_stream.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/sequence_input_stream.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/sequence_output_stream.hpp
-
+        ${CMAKE_CURRENT_SOURCE_DIR}/lazy_sequence_input_stream.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/lazy_sequence_output_stream.hpp
 )

@@ -16,7 +16,7 @@ public:
         is_open_(false)
     {
         if (target_ == nullptr)
-            throw std::invalid_argument("SequenceOutputStream<T>::constructor: Target sequence is null");
+            throw std::invalid_argument("SequenceOutputStream<T>::SequenceOutputStream: Target sequence is null");
     }
 
     explicit SequenceOutputStream(Sequence<T>& target) :
@@ -91,6 +91,10 @@ public:
     Sequence<T>* release_sequence() {
         if (target_ == nullptr)
             throw std::logic_error("SequenceOutputStream<T>::release_sequence: The sequence is already released");
+
+        // for mutable 'release_sequence' doesn't make sence, but nothing will happen
+        // if (! owns_target_)
+        //     throw std::logic_error("SequenceOutputStream<T>::release_sequence: can't release the source sequence");
 
         Sequence<T>* result = target_;
 
