@@ -1,7 +1,7 @@
 #include <exception>
 #include <iostream>
 
-#include "ui/console_ui.hpp"
+#include "console/console_ui.hpp"
 
 int main() {
     try {

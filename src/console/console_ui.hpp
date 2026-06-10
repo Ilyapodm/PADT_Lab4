@@ -4,16 +4,12 @@
 #include <string>
 
 #include "adt_lab_2/array_sequence.hpp"
-#include "adt_lab_2/list_sequence.hpp"
 #include "adt_lab_2/sequence.hpp"
-#include "core/ordinal.hpp"
-#include "generators/generator.hpp"
 #include "lazy_sequence/lazy_sequence.hpp"
 #include "smart_data/smart_data_config.hpp"
-#include "smart_data/smart_data_generator.hpp"
 #include "streams/sequence_input_stream.hpp"
 #include "streams/sequence_output_stream.hpp"
-#include "ui/ui_records.hpp"
+#include "console/ui_records.hpp"
 
 class ConsoleUI {
 public:

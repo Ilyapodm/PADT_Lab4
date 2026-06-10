@@ -1,12 +1,15 @@
-#include "ui/console_ui.hpp"
+#include "console/console_ui.hpp"
 
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 
-#include "ui/console_io.hpp"
-#include "ui/generator_presets.hpp"
+#include "console/console_io.hpp"
+#include "utils/generator_functions.hpp"
+#include "adt_lab_2/list_sequence.hpp"
+#include "core/ordinal.hpp"
+#include "smart_data/smart_data_generator.hpp"
 
 ConsoleUI::ConsoleUI() {}
 
@@ -637,22 +640,22 @@ void ConsoleUI::create_lazy_sequence_from_function_preset_() {
     std::cout << "4. constant seven\n";
 
     int preset = read_menu_choice("choose: ", 1, 4);
-    Ordinal length = read_ordinal("choose length");
+    Ordinal length = read_generator_length("choose length");
 
     int (*function)(std::size_t) = nullptr;
     std::string name;
 
     if (preset == 1) {
-        function = ui_identity_function;
+        function = identity_function;
         name = "identity function preset";
     } else if (preset == 2) {
-        function = ui_square_function;
+        function = square_function;
         name = "square function preset";
     } else if (preset == 3) {
-        function = ui_odd_linear_function;
+        function = odd_linear_function;
         name = "odd linear function preset";
     } else {
-        function = ui_constant_seven_function;
+        function = constant_seven_function;
         name = "constant seven function preset";
     }
 
@@ -672,7 +675,7 @@ void ConsoleUI::create_lazy_sequence_from_recurrence_preset_() {
     std::cout << "3. double previous from start\n";
 
     int preset = read_menu_choice("choose: ", 1, 3);
-    Ordinal length = read_ordinal("choose length");
+    Ordinal length = read_generator_length("choose length");
 
     int* initial = nullptr;
     std::size_t count = 0;
@@ -685,19 +688,19 @@ void ConsoleUI::create_lazy_sequence_from_recurrence_preset_() {
             initial = new int[2];
             initial[0] = 0;
             initial[1] = 1;
-            rule = ui_fibonacci_ring_rule;
+            rule = fibonacci_ring_rule;
             name = "fibonacci recurrence preset";
         } else if (preset == 2) {
             count = 1;
             initial = new int[1];
             initial[0] = read_int("start value: ");
-            rule = ui_increment_by_one_ring_rule;
+            rule = increment_by_one_ring_rule;
             name = "increment-by-one recurrence preset";
         } else {
             count = 1;
             initial = new int[1];
             initial[0] = read_int("start value: ");
-            rule = ui_double_previous_ring_rule;
+            rule = double_previous_ring_rule;
             name = "double-previous recurrence preset";
         }
 
@@ -767,7 +770,7 @@ void ConsoleUI::get_lazy_sequence_finite_element_() {
 
 void ConsoleUI::get_lazy_sequence_ordinal_element_() {
     int id = choose_lazy_id_();
-    Ordinal index = read_ordinal("choose index");
+    Ordinal index = read_ordinal_index("choose index");
 
     LazySequenceRecord* record = get_lazy_record_(id);
     std::cout << "value = " << record->sequence->get(index) << "\n";
@@ -817,7 +820,7 @@ void ConsoleUI::prepend_to_lazy_sequence_() {
 
 void ConsoleUI::insert_into_lazy_sequence_() {
     int id = choose_lazy_id_();
-    Ordinal index = read_ordinal("choose insert index");
+    Ordinal index = read_ordinal_index("choose insert index");
     int value = read_int("value: ");
 
     LazySequenceRecord* record = get_lazy_record_(id);
@@ -832,7 +835,7 @@ void ConsoleUI::insert_into_lazy_sequence_() {
 
 void ConsoleUI::set_lazy_sequence_element_() {
     int id = choose_lazy_id_();
-    Ordinal index = read_ordinal("choose set index");
+    Ordinal index = read_ordinal_index("choose set index");
     int value = read_int("value: ");
 
     LazySequenceRecord* record = get_lazy_record_(id);
@@ -847,7 +850,7 @@ void ConsoleUI::set_lazy_sequence_element_() {
 
 void ConsoleUI::remove_lazy_sequence_element_() {
     int id = choose_lazy_id_();
-    Ordinal index = read_ordinal("choose remove index");
+    Ordinal index = read_ordinal_index("choose remove index");
 
     LazySequenceRecord* record = get_lazy_record_(id);
     LazySequence<int>* result = record->sequence->remove_at(index);
@@ -863,8 +866,8 @@ void ConsoleUI::lazy_sequence_subsequence_() {
     std::cout << "lazy subsequence uses half-open interval: [start, end)\n";
 
     int id = choose_lazy_id_();
-    Ordinal start = read_ordinal("choose start index");
-    Ordinal end = read_ordinal("choose end exclusive index");
+    Ordinal start = read_ordinal_index("choose start index");
+    Ordinal end = read_ordinal_index("choose end exclusive index");
 
     LazySequenceRecord* record = get_lazy_record_(id);
     LazySequence<int>* result = record->sequence->get_subsequence(start, end);
@@ -904,7 +907,7 @@ void ConsoleUI::create_smart_data_config_() {
         ? SmartDataDistributionType::Uniform
         : SmartDataDistributionType::Normal;
 
-    config.length = read_ordinal("choose length");
+    config.length = read_generator_length("choose length");
     config.seed = read_uint32("seed: ");
     config.min_value = read_int("min value: ");
     config.max_value = read_int("max value: ");

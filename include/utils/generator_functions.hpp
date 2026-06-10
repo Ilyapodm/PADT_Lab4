@@ -39,10 +39,28 @@ inline int linear_function(std::size_t index) {
     return static_cast<int>(100 + index * 10);
 }
 
+inline int odd_linear_function(std::size_t index) {
+    return static_cast<int>(2 * index + 1);
+}
+
+inline int constant_seven_function(std::size_t index) {
+    static_cast<void>(index);
+    return 7;
+}
+
 // recurrence RingBuffer functions
 inline int fibonacci_ring_rule(const RingBuffer<int>& window) {
     return window.get(0) + window.get(1);
 }
+
+inline int increment_by_one_ring_rule(const RingBuffer<int>& window) {
+    return window.get(0) + 1;
+}
+
+inline int double_previous_ring_rule(const RingBuffer<int>& window) {
+    return window.get(0) * 2;
+}
+
 
 inline int tribonacci_ring_Rule(const RingBuffer<int>& window) {
     return window.get(0) + window.get(1) + window.get(2);
