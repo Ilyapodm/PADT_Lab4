@@ -8,6 +8,7 @@
 #include "adt_lab_2/sequence.hpp"
 #include "adt_lab_2/ienumerator.hpp"
 #include "adt_lab_2/option.hpp"
+#include "generators/generator.hpp"
 #include "nodes/node.hpp"
 
 template <typename T>
@@ -16,6 +17,7 @@ public:
     // Constructors 
     LazySequence();
     LazySequence(const T* items, int count);
+    LazySequence(const Generator<T>& generator);
 
     LazySequence(const Sequence<T>& seq);  // constructor for sequence
 

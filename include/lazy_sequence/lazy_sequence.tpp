@@ -49,6 +49,11 @@ LazySequence<T>::LazySequence(const T* items, int count) {
 }
 
 template <typename T>
+LazySequence<T>::LazySequence(const Generator<T>& generator) {
+    root_node_ = new SourceNode<T>(generator);
+}
+
+template <typename T>
 LazySequence<T>::LazySequence(const Sequence<T>& seq) {
     if (const auto* lazy = dynamic_cast<const LazySequence<T>*>(&seq)) {
         root_node_ = lazy->root_node_->clone();
