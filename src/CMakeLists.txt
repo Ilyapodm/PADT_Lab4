@@ -1,7 +1,6 @@
 add_executable(lab_main
     main.cpp
-    # console/console_menu.cpp
-    # console/lazy_sequence_demo.cpp
+    console/console_ui.cpp
 )
 
 target_link_libraries(lab_main
