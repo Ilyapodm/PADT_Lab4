@@ -9,6 +9,8 @@
 #include "smart_data/smart_data_config.hpp"
 #include "streams/sequence_input_stream.hpp"
 #include "streams/sequence_output_stream.hpp"
+#include "streams/lazy_sequence_input_stream.hpp"
+#include "streams/lazy_sequence_output_stream.hpp"
 #include "console/ui_records.hpp"
 
 class ConsoleUI {
@@ -25,8 +27,10 @@ private:
     MutableArraySequence<SequenceRecord*> sequence_records_;
     MutableArraySequence<LazySequenceRecord*> lazy_records_;
     MutableArraySequence<SmartConfigRecord*> smart_config_records_;
-    MutableArraySequence<InputStreamRecord*> input_stream_records_;
-    MutableArraySequence<OutputStreamRecord*> output_stream_records_;
+    MutableArraySequence<SequenceInputStreamRecord*> sequence_input_stream_records_;
+    MutableArraySequence<LazyInputStreamRecord*> lazy_input_stream_records_;
+    MutableArraySequence<SequenceOutputStreamRecord*> sequence_output_stream_records_;
+    MutableArraySequence<LazyOutputStreamRecord*> lazy_output_stream_records_;
 
     void main_menu_();
 
@@ -36,7 +40,11 @@ private:
     void input_stream_menu_();
     void output_stream_menu_();
     void deletion_menu_();
-    void planned_lazy_streams_menu_();
+
+    void sequence_input_stream_menu_();
+    void lazy_input_stream_menu_();
+    void sequence_output_stream_menu_();
+    void lazy_output_stream_menu_();
 
     void create_ordinary_sequence_();
     void list_ordinary_sequences_() const;
@@ -74,49 +82,80 @@ private:
     void list_smart_data_configs_() const;
     void preview_smart_data_config_();
 
-    void create_input_stream_();
-    void list_input_streams_() const;
-    void open_input_stream_();
-    void close_input_stream_();
-    void reset_input_stream_();
-    void read_one_from_input_stream_();
-    void read_many_from_input_stream_();
-    void seek_input_stream_();
-    void show_input_stream_position_();
-    void show_input_stream_end_state_();
+    void create_sequence_input_stream_();
+    void list_sequence_input_streams_() const;
+    void open_sequence_input_stream_();
+    void close_sequence_input_stream_();
+    void reset_sequence_input_stream_();
+    void read_one_from_sequence_input_stream_();
+    void read_many_from_sequence_input_stream_();
+    void seek_sequence_input_stream_();
+    void show_sequence_input_stream_position_();
+    void show_sequence_input_stream_end_state_();
+    void delete_sequence_input_stream_();
 
-    void create_output_stream_();
-    void list_output_streams_() const;
-    void open_output_stream_();
-    void close_output_stream_();
-    void write_one_to_output_stream_();
-    void write_many_to_output_stream_();
-    void show_output_stream_position_();
-    void release_output_stream_sequence_();
+    void create_lazy_input_stream_();
+    void list_lazy_input_streams_() const;
+    void open_lazy_input_stream_();
+    void close_lazy_input_stream_();
+    void reset_lazy_input_stream_();
+    void read_one_from_lazy_input_stream_();
+    void read_many_from_lazy_input_stream_();
+    void seek_lazy_input_stream_finite_();
+    void seek_lazy_input_stream_ordinal_();
+    void show_lazy_input_stream_finite_position_();
+    void show_lazy_input_stream_ordinal_position_();
+    void show_lazy_input_stream_end_state_();
+    void delete_lazy_input_stream_();
+
+    void create_sequence_output_stream_();
+    void list_sequence_output_streams_() const;
+    void open_sequence_output_stream_();
+    void close_sequence_output_stream_();
+    void write_one_to_sequence_output_stream_();
+    void write_many_to_sequence_output_stream_();
+    void show_sequence_output_stream_position_();
+    void release_sequence_output_stream_sequence_();
+    void delete_sequence_output_stream_();
+
+    void create_lazy_output_stream_();
+    void list_lazy_output_streams_() const;
+    void open_lazy_output_stream_();
+    void close_lazy_output_stream_();
+    void write_one_to_lazy_output_stream_();
+    void write_many_to_lazy_output_stream_();
+    void show_lazy_output_stream_finite_position_();
+    void show_lazy_output_stream_ordinal_position_();
+    void release_lazy_output_stream_sequence_();
+    void delete_lazy_output_stream_();
 
     void delete_ordinary_sequence_();
     void delete_lazy_sequence_();
     void delete_smart_config_();
-    void delete_input_stream_();
-    void delete_output_stream_();
 
     int add_sequence_record_(Sequence<int>* sequence, SequenceContainerKind container_kind, SequenceMutability mutability, const std::string& description);
     int add_lazy_record_(LazySequence<int>* sequence, LazySequenceOrigin origin, const std::string& description);
     int add_smart_config_record_(const SmartDataConfig& config, const std::string& description);
-    int add_input_stream_record_(SequenceInputStream<int>* stream, StreamSourceKind source_kind, int source_id, const std::string& description);
-    int add_output_stream_record_(SequenceOutputStream<int>* stream, StreamTargetKind target_kind, int target_id, const std::string& description);
+    int add_sequence_input_stream_record_(SequenceInputStream<int>* stream, int source_sequence_id, const std::string& description);
+    int add_lazy_input_stream_record_(LazySequenceInputStream<int>* stream, int source_lazy_id, const std::string& description);
+    int add_sequence_output_stream_record_(SequenceOutputStream<int>* stream, int target_sequence_id, const std::string& description);
+    int add_lazy_output_stream_record_(LazySequenceOutputStream<int>* stream, int target_lazy_id, const std::string& description);
 
     SequenceRecord* get_sequence_record_(int id) const;
     LazySequenceRecord* get_lazy_record_(int id) const;
     SmartConfigRecord* get_smart_config_record_(int id) const;
-    InputStreamRecord* get_input_stream_record_(int id) const;
-    OutputStreamRecord* get_output_stream_record_(int id) const;
+    SequenceInputStreamRecord* get_sequence_input_stream_record_(int id) const;
+    LazyInputStreamRecord* get_lazy_input_stream_record_(int id) const;
+    SequenceOutputStreamRecord* get_sequence_output_stream_record_(int id) const;
+    LazyOutputStreamRecord* get_lazy_output_stream_record_(int id) const;
 
     int choose_sequence_id_() const;
     int choose_lazy_id_() const;
     int choose_smart_config_id_() const;
-    int choose_input_stream_id_() const;
-    int choose_output_stream_id_() const;
+    int choose_sequence_input_stream_id_() const;
+    int choose_lazy_input_stream_id_() const;
+    int choose_sequence_output_stream_id_() const;
+    int choose_lazy_output_stream_id_() const;
 
     void handle_ordinary_sequence_result_(int source_id, Sequence<int>* result, const std::string& operation_description);
     bool ordinary_sequence_has_stream_dependency_(int id) const;

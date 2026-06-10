@@ -32,10 +32,9 @@ void ConsoleUI::main_menu_() {
         std::cout << "4. input streams\n";
         std::cout << "5. output streams\n";
         std::cout << "6. delete objects\n";
-        std::cout << "7. planned lazy streams\n";
         std::cout << "0. exit\n";
 
-        int choice = read_menu_choice("choose: ", 0, 7);
+        int choice = read_menu_choice("choose: ", 0, 6);
 
         try {
             switch (choice) {
@@ -56,9 +55,6 @@ void ConsoleUI::main_menu_() {
                     break;
                 case 6:
                     deletion_menu_();
-                    break;
-                case 7:
-                    planned_lazy_streams_menu_();
                     break;
                 case 0:
                     running = false;
@@ -277,52 +273,20 @@ void ConsoleUI::input_stream_menu_() {
     bool running = true;
 
     while (running) {
-        std::cout << "\n=== input stream menu ===\n";
-        std::cout << "1. create input stream\n";
-        std::cout << "2. list input streams\n";
-        std::cout << "3. open\n";
-        std::cout << "4. close\n";
-        std::cout << "5. reset\n";
-        std::cout << "6. read one\n";
-        std::cout << "7. read many\n";
-        std::cout << "8. seek\n";
-        std::cout << "9. show position\n";
-        std::cout << "10. is end of stream\n";
+        std::cout << "\n=== input streams ===\n";
+        std::cout << "1. sequence input streams\n";
+        std::cout << "2. lazy sequence input streams\n";
         std::cout << "0. back\n";
 
-        int choice = read_menu_choice("choose: ", 0, 10);
+        int choice = read_menu_choice("choose: ", 0, 2);
 
         try {
             switch (choice) {
                 case 1:
-                    create_input_stream_();
+                    sequence_input_stream_menu_();
                     break;
                 case 2:
-                    list_input_streams_();
-                    break;
-                case 3:
-                    open_input_stream_();
-                    break;
-                case 4:
-                    close_input_stream_();
-                    break;
-                case 5:
-                    reset_input_stream_();
-                    break;
-                case 6:
-                    read_one_from_input_stream_();
-                    break;
-                case 7:
-                    read_many_from_input_stream_();
-                    break;
-                case 8:
-                    seek_input_stream_();
-                    break;
-                case 9:
-                    show_input_stream_position_();
-                    break;
-                case 10:
-                    show_input_stream_end_state_();
+                    lazy_input_stream_menu_();
                     break;
                 case 0:
                     running = false;
@@ -340,44 +304,284 @@ void ConsoleUI::output_stream_menu_() {
     bool running = true;
 
     while (running) {
-        std::cout << "\n=== output stream menu ===\n";
-        std::cout << "1. create output stream\n";
-        std::cout << "2. list output streams\n";
-        std::cout << "3. open\n";
-        std::cout << "4. close\n";
-        std::cout << "5. write one\n";
-        std::cout << "6. write many\n";
-        std::cout << "7. show position\n";
-        std::cout << "8. release sequence\n";
+        std::cout << "\n=== output streams ===\n";
+        std::cout << "1. sequence output streams\n";
+        std::cout << "2. lazy sequence output streams\n";
         std::cout << "0. back\n";
 
-        int choice = read_menu_choice("choose: ", 0, 8);
+        int choice = read_menu_choice("choose: ", 0, 2);
 
         try {
             switch (choice) {
                 case 1:
-                    create_output_stream_();
+                    sequence_output_stream_menu_();
                     break;
                 case 2:
-                    list_output_streams_();
+                    lazy_output_stream_menu_();
+                    break;
+                case 0:
+                    running = false;
+                    break;
+                default:
+                    break;
+            }
+        } catch (const std::exception& error) {
+            print_exception(error);
+        }
+    }
+}
+
+void ConsoleUI::sequence_input_stream_menu_() {
+    bool running = true;
+
+    while (running) {
+        std::cout << "\n=== sequence input streams ===\n";
+        std::cout << "1. create from ordinary sequence\n";
+        std::cout << "2. list\n";
+        std::cout << "3. open\n";
+        std::cout << "4. close\n";
+        std::cout << "5. reset\n";
+        std::cout << "6. read one\n";
+        std::cout << "7. read many\n";
+        std::cout << "8. seek by finite position\n";
+        std::cout << "9. show finite position\n";
+        std::cout << "10. is end of stream\n";
+        std::cout << "11. delete\n";
+        std::cout << "0. back\n";
+
+        int choice = read_menu_choice("choose: ", 0, 11);
+
+        try {
+            switch (choice) {
+                case 1:
+                    create_sequence_input_stream_();
+                    break;
+                case 2:
+                    list_sequence_input_streams_();
                     break;
                 case 3:
-                    open_output_stream_();
+                    open_sequence_input_stream_();
                     break;
                 case 4:
-                    close_output_stream_();
+                    close_sequence_input_stream_();
                     break;
                 case 5:
-                    write_one_to_output_stream_();
+                    reset_sequence_input_stream_();
                     break;
                 case 6:
-                    write_many_to_output_stream_();
+                    read_one_from_sequence_input_stream_();
                     break;
                 case 7:
-                    show_output_stream_position_();
+                    read_many_from_sequence_input_stream_();
                     break;
                 case 8:
-                    release_output_stream_sequence_();
+                    seek_sequence_input_stream_();
+                    break;
+                case 9:
+                    show_sequence_input_stream_position_();
+                    break;
+                case 10:
+                    show_sequence_input_stream_end_state_();
+                    break;
+                case 11:
+                    delete_sequence_input_stream_();
+                    break;
+                case 0:
+                    running = false;
+                    break;
+                default:
+                    break;
+            }
+        } catch (const std::exception& error) {
+            print_exception(error);
+        }
+    }
+}
+
+void ConsoleUI::lazy_input_stream_menu_() {
+    bool running = true;
+
+    while (running) {
+        std::cout << "\n=== lazy sequence input streams ===\n";
+        std::cout << "1. create from lazy sequence\n";
+        std::cout << "2. list\n";
+        std::cout << "3. open\n";
+        std::cout << "4. close\n";
+        std::cout << "5. reset\n";
+        std::cout << "6. read one\n";
+        std::cout << "7. read many\n";
+        std::cout << "8. seek by finite position\n";
+        std::cout << "9. seek by ordinal position\n";
+        std::cout << "10. show finite position\n";
+        std::cout << "11. show ordinal position\n";
+        std::cout << "12. is end of stream\n";
+        std::cout << "13. delete\n";
+        std::cout << "0. back\n";
+
+        int choice = read_menu_choice("choose: ", 0, 13);
+
+        try {
+            switch (choice) {
+                case 1:
+                    create_lazy_input_stream_();
+                    break;
+                case 2:
+                    list_lazy_input_streams_();
+                    break;
+                case 3:
+                    open_lazy_input_stream_();
+                    break;
+                case 4:
+                    close_lazy_input_stream_();
+                    break;
+                case 5:
+                    reset_lazy_input_stream_();
+                    break;
+                case 6:
+                    read_one_from_lazy_input_stream_();
+                    break;
+                case 7:
+                    read_many_from_lazy_input_stream_();
+                    break;
+                case 8:
+                    seek_lazy_input_stream_finite_();
+                    break;
+                case 9:
+                    seek_lazy_input_stream_ordinal_();
+                    break;
+                case 10:
+                    show_lazy_input_stream_finite_position_();
+                    break;
+                case 11:
+                    show_lazy_input_stream_ordinal_position_();
+                    break;
+                case 12:
+                    show_lazy_input_stream_end_state_();
+                    break;
+                case 13:
+                    delete_lazy_input_stream_();
+                    break;
+                case 0:
+                    running = false;
+                    break;
+                default:
+                    break;
+            }
+        } catch (const std::exception& error) {
+            print_exception(error);
+        }
+    }
+}
+
+void ConsoleUI::sequence_output_stream_menu_() {
+    bool running = true;
+
+    while (running) {
+        std::cout << "\n=== sequence output streams ===\n";
+        std::cout << "1. create from ordinary sequence\n";
+        std::cout << "2. list\n";
+        std::cout << "3. open\n";
+        std::cout << "4. close\n";
+        std::cout << "5. write one\n";
+        std::cout << "6. write many\n";
+        std::cout << "7. show finite position\n";
+        std::cout << "8. release ordinary sequence\n";
+        std::cout << "9. delete\n";
+        std::cout << "0. back\n";
+
+        int choice = read_menu_choice("choose: ", 0, 9);
+
+        try {
+            switch (choice) {
+                case 1:
+                    create_sequence_output_stream_();
+                    break;
+                case 2:
+                    list_sequence_output_streams_();
+                    break;
+                case 3:
+                    open_sequence_output_stream_();
+                    break;
+                case 4:
+                    close_sequence_output_stream_();
+                    break;
+                case 5:
+                    write_one_to_sequence_output_stream_();
+                    break;
+                case 6:
+                    write_many_to_sequence_output_stream_();
+                    break;
+                case 7:
+                    show_sequence_output_stream_position_();
+                    break;
+                case 8:
+                    release_sequence_output_stream_sequence_();
+                    break;
+                case 9:
+                    delete_sequence_output_stream_();
+                    break;
+                case 0:
+                    running = false;
+                    break;
+                default:
+                    break;
+            }
+        } catch (const std::exception& error) {
+            print_exception(error);
+        }
+    }
+}
+
+void ConsoleUI::lazy_output_stream_menu_() {
+    bool running = true;
+
+    while (running) {
+        std::cout << "\n=== lazy sequence output streams ===\n";
+        std::cout << "1. create from lazy sequence\n";
+        std::cout << "2. list\n";
+        std::cout << "3. open\n";
+        std::cout << "4. close\n";
+        std::cout << "5. write one\n";
+        std::cout << "6. write many\n";
+        std::cout << "7. show finite position\n";
+        std::cout << "8. show ordinal position\n";
+        std::cout << "9. release lazy sequence\n";
+        std::cout << "10. delete\n";
+        std::cout << "0. back\n";
+
+        int choice = read_menu_choice("choose: ", 0, 10);
+
+        try {
+            switch (choice) {
+                case 1:
+                    create_lazy_output_stream_();
+                    break;
+                case 2:
+                    list_lazy_output_streams_();
+                    break;
+                case 3:
+                    open_lazy_output_stream_();
+                    break;
+                case 4:
+                    close_lazy_output_stream_();
+                    break;
+                case 5:
+                    write_one_to_lazy_output_stream_();
+                    break;
+                case 6:
+                    write_many_to_lazy_output_stream_();
+                    break;
+                case 7:
+                    show_lazy_output_stream_finite_position_();
+                    break;
+                case 8:
+                    show_lazy_output_stream_ordinal_position_();
+                    break;
+                case 9:
+                    release_lazy_output_stream_sequence_();
+                    break;
+                case 10:
+                    delete_lazy_output_stream_();
                     break;
                 case 0:
                     running = false;
@@ -399,11 +603,9 @@ void ConsoleUI::deletion_menu_() {
         std::cout << "1. delete ordinary sequence\n";
         std::cout << "2. delete lazy sequence\n";
         std::cout << "3. delete smart data config\n";
-        std::cout << "4. delete input stream\n";
-        std::cout << "5. delete output stream\n";
         std::cout << "0. back\n";
 
-        int choice = read_menu_choice("choose: ", 0, 5);
+        int choice = read_menu_choice("choose: ", 0, 3);
 
         try {
             switch (choice) {
@@ -416,12 +618,6 @@ void ConsoleUI::deletion_menu_() {
                 case 3:
                     delete_smart_config_();
                     break;
-                case 4:
-                    delete_input_stream_();
-                    break;
-                case 5:
-                    delete_output_stream_();
-                    break;
                 case 0:
                     running = false;
                     break;
@@ -432,13 +628,6 @@ void ConsoleUI::deletion_menu_() {
             print_exception(error);
         }
     }
-}
-
-void ConsoleUI::planned_lazy_streams_menu_() {
-    std::cout << "\n=== planned lazy streams ===\n";
-    std::cout << "native LazySequenceInputStream is not implemented yet\n";
-    std::cout << "native LazySequenceOutputStream is not implemented yet\n";
-    std::cout << "current ui can create SequenceInputStream and SequenceOutputStream over LazySequence through Sequence<T> interface\n";
 }
 
 void ConsoleUI::create_ordinary_sequence_() {
@@ -966,43 +1155,25 @@ void ConsoleUI::preview_smart_data_config_() {
     std::cout << "]\n";
 }
 
-void ConsoleUI::create_input_stream_() {
-    std::cout << "\ninput source:\n";
-    std::cout << "1. ordinary sequence\n";
-    std::cout << "2. lazy sequence\n";
-    int choice = read_menu_choice("choose: ", 1, 2);
 
-    if (choice == 1) {
-        int id = choose_sequence_id_();
-        SequenceRecord* record = get_sequence_record_(id);
-
-        SequenceInputStream<int>* stream = new SequenceInputStream<int>(record->sequence);
-
-        std::ostringstream description;
-        description << "input stream over ordinary sequence #" << id;
-
-        int stream_id = add_input_stream_record_(stream, StreamSourceKind::OrdinarySequence, id, description.str());
-        std::cout << "created input stream #" << stream_id << "\n";
-        return;
-    }
-
-    int id = choose_lazy_id_();
-    LazySequenceRecord* record = get_lazy_record_(id);
+void ConsoleUI::create_sequence_input_stream_() {
+    int id = choose_sequence_id_();
+    SequenceRecord* record = get_sequence_record_(id);
 
     SequenceInputStream<int>* stream = new SequenceInputStream<int>(record->sequence);
 
     std::ostringstream description;
-    description << "input stream over lazy sequence #" << id;
+    description << "sequence input stream over ordinary sequence #" << id;
 
-    int stream_id = add_input_stream_record_(stream, StreamSourceKind::LazySequence, id, description.str());
-    std::cout << "created input stream #" << stream_id << "\n";
+    int stream_id = add_sequence_input_stream_record_(stream, id, description.str());
+    std::cout << "created sequence input stream #" << stream_id << "\n";
 }
 
-void ConsoleUI::list_input_streams_() const {
-    std::cout << "\n=== input streams ===\n";
+void ConsoleUI::list_sequence_input_streams_() const {
+    std::cout << "\n=== sequence input streams ===\n";
 
-    for (int i = 0; i < input_stream_records_.get_size(); ++i) {
-        InputStreamRecord* record = input_stream_records_.get(i);
+    for (int i = 0; i < sequence_input_stream_records_.get_size(); ++i) {
+        SequenceInputStreamRecord* record = sequence_input_stream_records_.get(i);
 
         std::cout << "#" << i << " ";
 
@@ -1012,42 +1183,46 @@ void ConsoleUI::list_input_streams_() const {
         }
 
         std::cout << record->description
-                  << ", source = " << to_string(record->source_kind) << " #" << record->source_id
-                  << ", " << (record->stream->is_open() ? "open" : "closed")
-                  << ", position = " << record->stream->get_position()
-                  << "\n";
+                  << ", source = ordinary sequence #" << record->source_sequence_id
+                  << ", " << (record->stream->is_open() ? "open" : "closed");
+
+        if (record->stream->is_open()) {
+            std::cout << ", position = " << record->stream->get_position();
+        }
+
+        std::cout << "\n";
     }
 }
 
-void ConsoleUI::open_input_stream_() {
-    int id = choose_input_stream_id_();
-    get_input_stream_record_(id)->stream->open();
-    std::cout << "input stream opened\n";
+void ConsoleUI::open_sequence_input_stream_() {
+    int id = choose_sequence_input_stream_id_();
+    get_sequence_input_stream_record_(id)->stream->open();
+    std::cout << "sequence input stream opened\n";
 }
 
-void ConsoleUI::close_input_stream_() {
-    int id = choose_input_stream_id_();
-    get_input_stream_record_(id)->stream->close();
-    std::cout << "input stream closed\n";
+void ConsoleUI::close_sequence_input_stream_() {
+    int id = choose_sequence_input_stream_id_();
+    get_sequence_input_stream_record_(id)->stream->close();
+    std::cout << "sequence input stream closed\n";
 }
 
-void ConsoleUI::reset_input_stream_() {
-    int id = choose_input_stream_id_();
-    get_input_stream_record_(id)->stream->reset();
-    std::cout << "input stream reset\n";
+void ConsoleUI::reset_sequence_input_stream_() {
+    int id = choose_sequence_input_stream_id_();
+    get_sequence_input_stream_record_(id)->stream->reset();
+    std::cout << "sequence input stream reset\n";
 }
 
-void ConsoleUI::read_one_from_input_stream_() {
-    int id = choose_input_stream_id_();
-    int value = get_input_stream_record_(id)->stream->input();
+void ConsoleUI::read_one_from_sequence_input_stream_() {
+    int id = choose_sequence_input_stream_id_();
+    int value = get_sequence_input_stream_record_(id)->stream->input();
     std::cout << "value = " << value << "\n";
 }
 
-void ConsoleUI::read_many_from_input_stream_() {
-    int id = choose_input_stream_id_();
+void ConsoleUI::read_many_from_sequence_input_stream_() {
+    int id = choose_sequence_input_stream_id_();
     std::size_t count = read_size_t("count: ");
 
-    SequenceInputStream<int>* stream = get_input_stream_record_(id)->stream;
+    SequenceInputStream<int>* stream = get_sequence_input_stream_record_(id)->stream;
 
     std::cout << "[";
 
@@ -1066,62 +1241,58 @@ void ConsoleUI::read_many_from_input_stream_() {
     std::cout << "]\n";
 }
 
-void ConsoleUI::seek_input_stream_() {
-    int id = choose_input_stream_id_();
+void ConsoleUI::seek_sequence_input_stream_() {
+    int id = choose_sequence_input_stream_id_();
     std::size_t index = read_size_t("position: ");
 
-    std::size_t result = get_input_stream_record_(id)->stream->seek(index);
+    std::size_t result = get_sequence_input_stream_record_(id)->stream->seek(index);
     std::cout << "new position = " << result << "\n";
 }
 
-void ConsoleUI::show_input_stream_position_() {
-    int id = choose_input_stream_id_();
-    std::cout << "position = " << get_input_stream_record_(id)->stream->get_position() << "\n";
+void ConsoleUI::show_sequence_input_stream_position_() {
+    int id = choose_sequence_input_stream_id_();
+    std::cout << "position = " << get_sequence_input_stream_record_(id)->stream->get_position() << "\n";
 }
 
-void ConsoleUI::show_input_stream_end_state_() {
-    int id = choose_input_stream_id_();
-    bool is_end = get_input_stream_record_(id)->stream->is_end_of_stream();
+void ConsoleUI::show_sequence_input_stream_end_state_() {
+    int id = choose_sequence_input_stream_id_();
+    bool is_end = get_sequence_input_stream_record_(id)->stream->is_end_of_stream();
     std::cout << (is_end ? "end of stream" : "not end of stream") << "\n";
 }
 
-void ConsoleUI::create_output_stream_() {
-    std::cout << "\noutput target:\n";
-    std::cout << "1. ordinary sequence\n";
-    std::cout << "2. lazy sequence\n";
-    int choice = read_menu_choice("choose: ", 1, 2);
+void ConsoleUI::delete_sequence_input_stream_() {
+    int id = choose_sequence_input_stream_id_();
+    SequenceInputStreamRecord* record = get_sequence_input_stream_record_(id);
 
-    if (choice == 1) {
-        int id = choose_sequence_id_();
-        SequenceRecord* record = get_sequence_record_(id);
-
-        SequenceOutputStream<int>* stream = new SequenceOutputStream<int>(record->sequence);
-
-        std::ostringstream description;
-        description << "output stream over ordinary sequence #" << id;
-
-        int stream_id = add_output_stream_record_(stream, StreamTargetKind::OrdinarySequence, id, description.str());
-        std::cout << "created output stream #" << stream_id << "\n";
-        return;
+    if (record->stream->is_open()) {
+        record->stream->close();
     }
 
+    delete record->stream;
+    record->stream = nullptr;
+    record->is_deleted = true;
+
+    std::cout << "sequence input stream #" << id << " deleted\n";
+}
+
+void ConsoleUI::create_lazy_input_stream_() {
     int id = choose_lazy_id_();
     LazySequenceRecord* record = get_lazy_record_(id);
 
-    SequenceOutputStream<int>* stream = new SequenceOutputStream<int>(record->sequence);
+    LazySequenceInputStream<int>* stream = new LazySequenceInputStream<int>(record->sequence);
 
     std::ostringstream description;
-    description << "output stream over lazy sequence #" << id;
+    description << "lazy input stream over lazy sequence #" << id;
 
-    int stream_id = add_output_stream_record_(stream, StreamTargetKind::LazySequence, id, description.str());
-    std::cout << "created output stream #" << stream_id << "\n";
+    int stream_id = add_lazy_input_stream_record_(stream, id, description.str());
+    std::cout << "created lazy input stream #" << stream_id << "\n";
 }
 
-void ConsoleUI::list_output_streams_() const {
-    std::cout << "\n=== output streams ===\n";
+void ConsoleUI::list_lazy_input_streams_() const {
+    std::cout << "\n=== lazy sequence input streams ===\n";
 
-    for (int i = 0; i < output_stream_records_.get_size(); ++i) {
-        OutputStreamRecord* record = output_stream_records_.get(i);
+    for (int i = 0; i < lazy_input_stream_records_.get_size(); ++i) {
+        LazyInputStreamRecord* record = lazy_input_stream_records_.get(i);
 
         std::cout << "#" << i << " ";
 
@@ -1131,7 +1302,139 @@ void ConsoleUI::list_output_streams_() const {
         }
 
         std::cout << record->description
-                  << ", target = " << to_string(record->target_kind) << " #" << record->target_id
+                  << ", source = lazy sequence #" << record->source_lazy_id
+                  << ", " << (record->stream->is_open() ? "open" : "closed");
+
+        if (record->stream->is_open()) {
+            std::cout << ", ordinal position = " << record->stream->get_ordinal_position();
+        }
+
+        std::cout << "\n";
+    }
+}
+
+void ConsoleUI::open_lazy_input_stream_() {
+    int id = choose_lazy_input_stream_id_();
+    get_lazy_input_stream_record_(id)->stream->open();
+    std::cout << "lazy input stream opened\n";
+}
+
+void ConsoleUI::close_lazy_input_stream_() {
+    int id = choose_lazy_input_stream_id_();
+    get_lazy_input_stream_record_(id)->stream->close();
+    std::cout << "lazy input stream closed\n";
+}
+
+void ConsoleUI::reset_lazy_input_stream_() {
+    int id = choose_lazy_input_stream_id_();
+    get_lazy_input_stream_record_(id)->stream->reset();
+    std::cout << "lazy input stream reset\n";
+}
+
+void ConsoleUI::read_one_from_lazy_input_stream_() {
+    int id = choose_lazy_input_stream_id_();
+    int value = get_lazy_input_stream_record_(id)->stream->input();
+    std::cout << "value = " << value << "\n";
+}
+
+void ConsoleUI::read_many_from_lazy_input_stream_() {
+    int id = choose_lazy_input_stream_id_();
+    std::size_t count = read_size_t("count: ");
+
+    LazySequenceInputStream<int>* stream = get_lazy_input_stream_record_(id)->stream;
+
+    std::cout << "[";
+
+    for (std::size_t i = 0; i < count; ++i) {
+        if (stream->is_end_of_stream()) {
+            break;
+        }
+
+        if (i > 0) {
+            std::cout << ", ";
+        }
+
+        std::cout << stream->input();
+    }
+
+    std::cout << "]\n";
+}
+
+void ConsoleUI::seek_lazy_input_stream_finite_() {
+    int id = choose_lazy_input_stream_id_();
+    std::size_t index = read_size_t("finite position: ");
+
+    std::size_t result = get_lazy_input_stream_record_(id)->stream->seek(index);
+    std::cout << "new finite position = " << result << "\n";
+}
+
+void ConsoleUI::seek_lazy_input_stream_ordinal_() {
+    int id = choose_lazy_input_stream_id_();
+    Ordinal index = read_ordinal_index("choose ordinal position");
+
+    Ordinal result = get_lazy_input_stream_record_(id)->stream->seek(index);
+    std::cout << "new ordinal position = " << result << "\n";
+}
+
+void ConsoleUI::show_lazy_input_stream_finite_position_() {
+    int id = choose_lazy_input_stream_id_();
+    std::cout << "finite position = " << get_lazy_input_stream_record_(id)->stream->get_position() << "\n";
+}
+
+void ConsoleUI::show_lazy_input_stream_ordinal_position_() {
+    int id = choose_lazy_input_stream_id_();
+    std::cout << "ordinal position = " << get_lazy_input_stream_record_(id)->stream->get_ordinal_position() << "\n";
+}
+
+void ConsoleUI::show_lazy_input_stream_end_state_() {
+    int id = choose_lazy_input_stream_id_();
+    bool is_end = get_lazy_input_stream_record_(id)->stream->is_end_of_stream();
+    std::cout << (is_end ? "end of stream" : "not end of stream") << "\n";
+}
+
+void ConsoleUI::delete_lazy_input_stream_() {
+    int id = choose_lazy_input_stream_id_();
+    LazyInputStreamRecord* record = get_lazy_input_stream_record_(id);
+
+    if (record->stream->is_open()) {
+        record->stream->close();
+    }
+
+    delete record->stream;
+    record->stream = nullptr;
+    record->is_deleted = true;
+
+    std::cout << "lazy input stream #" << id << " deleted\n";
+}
+
+void ConsoleUI::create_sequence_output_stream_() {
+    int id = choose_sequence_id_();
+    SequenceRecord* record = get_sequence_record_(id);
+
+    SequenceOutputStream<int>* stream = new SequenceOutputStream<int>(record->sequence);
+
+    std::ostringstream description;
+    description << "sequence output stream over ordinary sequence #" << id;
+
+    int stream_id = add_sequence_output_stream_record_(stream, id, description.str());
+    std::cout << "created sequence output stream #" << stream_id << "\n";
+}
+
+void ConsoleUI::list_sequence_output_streams_() const {
+    std::cout << "\n=== sequence output streams ===\n";
+
+    for (int i = 0; i < sequence_output_stream_records_.get_size(); ++i) {
+        SequenceOutputStreamRecord* record = sequence_output_stream_records_.get(i);
+
+        std::cout << "#" << i << " ";
+
+        if (record == nullptr || record->is_deleted || record->stream == nullptr) {
+            std::cout << "[deleted]\n";
+            continue;
+        }
+
+        std::cout << record->description
+                  << ", target = ordinary sequence #" << record->target_sequence_id
                   << ", " << (record->released ? "released" : "not released")
                   << ", " << (record->stream->is_open() ? "open" : "closed");
 
@@ -1143,30 +1446,30 @@ void ConsoleUI::list_output_streams_() const {
     }
 }
 
-void ConsoleUI::open_output_stream_() {
-    int id = choose_output_stream_id_();
-    OutputStreamRecord* record = get_output_stream_record_(id);
+void ConsoleUI::open_sequence_output_stream_() {
+    int id = choose_sequence_output_stream_id_();
+    SequenceOutputStreamRecord* record = get_sequence_output_stream_record_(id);
 
     if (record->released) {
-        throw std::logic_error("output stream is already released");
+        throw std::logic_error("sequence output stream is already released");
     }
 
     record->stream->open();
-    std::cout << "output stream opened\n";
+    std::cout << "sequence output stream opened\n";
 }
 
-void ConsoleUI::close_output_stream_() {
-    int id = choose_output_stream_id_();
-    get_output_stream_record_(id)->stream->close();
-    std::cout << "output stream closed\n";
+void ConsoleUI::close_sequence_output_stream_() {
+    int id = choose_sequence_output_stream_id_();
+    get_sequence_output_stream_record_(id)->stream->close();
+    std::cout << "sequence output stream closed\n";
 }
 
-void ConsoleUI::write_one_to_output_stream_() {
-    int id = choose_output_stream_id_();
-    OutputStreamRecord* record = get_output_stream_record_(id);
+void ConsoleUI::write_one_to_sequence_output_stream_() {
+    int id = choose_sequence_output_stream_id_();
+    SequenceOutputStreamRecord* record = get_sequence_output_stream_record_(id);
 
     if (record->released) {
-        throw std::logic_error("output stream is already released");
+        throw std::logic_error("sequence output stream is already released");
     }
 
     int value = read_int("value: ");
@@ -1174,12 +1477,12 @@ void ConsoleUI::write_one_to_output_stream_() {
     std::cout << "new position = " << position << "\n";
 }
 
-void ConsoleUI::write_many_to_output_stream_() {
-    int id = choose_output_stream_id_();
-    OutputStreamRecord* record = get_output_stream_record_(id);
+void ConsoleUI::write_many_to_sequence_output_stream_() {
+    int id = choose_sequence_output_stream_id_();
+    SequenceOutputStreamRecord* record = get_sequence_output_stream_record_(id);
 
     if (record->released) {
-        throw std::logic_error("output stream is already released");
+        throw std::logic_error("sequence output stream is already released");
     }
 
     std::size_t count = read_size_t("count: ");
@@ -1194,63 +1497,207 @@ void ConsoleUI::write_many_to_output_stream_() {
     std::cout << "new position = " << record->stream->get_position() << "\n";
 }
 
-void ConsoleUI::show_output_stream_position_() {
-    int id = choose_output_stream_id_();
-    OutputStreamRecord* record = get_output_stream_record_(id);
+void ConsoleUI::show_sequence_output_stream_position_() {
+    int id = choose_sequence_output_stream_id_();
+    SequenceOutputStreamRecord* record = get_sequence_output_stream_record_(id);
 
     if (record->released) {
-        throw std::logic_error("output stream is already released");
+        throw std::logic_error("sequence output stream is already released");
     }
 
     std::cout << "position = " << record->stream->get_position() << "\n";
 }
 
-void ConsoleUI::release_output_stream_sequence_() {
-    int id = choose_output_stream_id_();
-    OutputStreamRecord* record = get_output_stream_record_(id);
+void ConsoleUI::release_sequence_output_stream_sequence_() {
+    int id = choose_sequence_output_stream_id_();
+    SequenceOutputStreamRecord* record = get_sequence_output_stream_record_(id);
 
     if (record->released) {
-        throw std::logic_error("output stream is already released");
+        throw std::logic_error("sequence output stream is already released");
     }
 
     Sequence<int>* released = record->stream->release_sequence();
     record->released = true;
 
-    if (record->target_kind == StreamTargetKind::OrdinarySequence) {
-        SequenceRecord* target = get_sequence_record_(record->target_id);
+    SequenceRecord* target = get_sequence_record_(record->target_sequence_id);
 
-        if (released == target->sequence) {
-            std::cout << "released original ordinary sequence; registry object was updated in place or unchanged\n";
-            return;
-        }
-
-        std::ostringstream description;
-        description << "released from output stream #" << id << ", based on ordinary sequence #" << record->target_id;
-
-        int result_id = add_sequence_record_(released, target->container_kind, target->mutability, description.str());
-        std::cout << "released sequence added as ordinary sequence #" << result_id << "\n";
+    if (released == target->sequence) {
+        std::cout << "released original ordinary sequence; registry object was updated in place or unchanged\n";
         return;
     }
 
-    LazySequenceRecord* target = get_lazy_record_(record->target_id);
+    std::ostringstream description;
+    description << "released from sequence output stream #" << id << ", based on ordinary sequence #" << record->target_sequence_id;
+
+    int result_id = add_sequence_record_(released, target->container_kind, target->mutability, description.str());
+    std::cout << "released sequence added as ordinary sequence #" << result_id << "\n";
+}
+
+void ConsoleUI::delete_sequence_output_stream_() {
+    int id = choose_sequence_output_stream_id_();
+    SequenceOutputStreamRecord* record = get_sequence_output_stream_record_(id);
+
+    if (record->stream->is_open()) {
+        record->stream->close();
+    }
+
+    delete record->stream;
+    record->stream = nullptr;
+    record->is_deleted = true;
+
+    std::cout << "sequence output stream #" << id << " deleted\n";
+}
+
+void ConsoleUI::create_lazy_output_stream_() {
+    int id = choose_lazy_id_();
+    LazySequenceRecord* record = get_lazy_record_(id);
+
+    LazySequenceOutputStream<int>* stream = new LazySequenceOutputStream<int>(record->sequence);
+
+    std::ostringstream description;
+    description << "lazy output stream over lazy sequence #" << id;
+
+    int stream_id = add_lazy_output_stream_record_(stream, id, description.str());
+    std::cout << "created lazy output stream #" << stream_id << "\n";
+}
+
+void ConsoleUI::list_lazy_output_streams_() const {
+    std::cout << "\n=== lazy sequence output streams ===\n";
+
+    for (int i = 0; i < lazy_output_stream_records_.get_size(); ++i) {
+        LazyOutputStreamRecord* record = lazy_output_stream_records_.get(i);
+
+        std::cout << "#" << i << " ";
+
+        if (record == nullptr || record->is_deleted || record->stream == nullptr) {
+            std::cout << "[deleted]\n";
+            continue;
+        }
+
+        std::cout << record->description
+                  << ", target = lazy sequence #" << record->target_lazy_id
+                  << ", " << (record->released ? "released" : "not released")
+                  << ", " << (record->stream->is_open() ? "open" : "closed");
+
+        if (record->stream->is_open()) {
+            std::cout << ", ordinal position = " << record->stream->get_ordinal_position();
+        }
+
+        std::cout << "\n";
+    }
+}
+
+void ConsoleUI::open_lazy_output_stream_() {
+    int id = choose_lazy_output_stream_id_();
+    LazyOutputStreamRecord* record = get_lazy_output_stream_record_(id);
+
+    if (record->released) {
+        throw std::logic_error("lazy output stream is already released");
+    }
+
+    record->stream->open();
+    std::cout << "lazy output stream opened\n";
+}
+
+void ConsoleUI::close_lazy_output_stream_() {
+    int id = choose_lazy_output_stream_id_();
+    get_lazy_output_stream_record_(id)->stream->close();
+    std::cout << "lazy output stream closed\n";
+}
+
+void ConsoleUI::write_one_to_lazy_output_stream_() {
+    int id = choose_lazy_output_stream_id_();
+    LazyOutputStreamRecord* record = get_lazy_output_stream_record_(id);
+
+    if (record->released) {
+        throw std::logic_error("lazy output stream is already released");
+    }
+
+    int value = read_int("value: ");
+    Ordinal position = record->stream->output_ordinal(value);
+    std::cout << "new ordinal position = " << position << "\n";
+}
+
+void ConsoleUI::write_many_to_lazy_output_stream_() {
+    int id = choose_lazy_output_stream_id_();
+    LazyOutputStreamRecord* record = get_lazy_output_stream_record_(id);
+
+    if (record->released) {
+        throw std::logic_error("lazy output stream is already released");
+    }
+
+    std::size_t count = read_size_t("count: ");
+
+    for (std::size_t i = 0; i < count; ++i) {
+        std::ostringstream prompt;
+        prompt << "value[" << i << "]: ";
+        int value = read_int(prompt.str());
+        record->stream->output_ordinal(value);
+    }
+
+    std::cout << "new ordinal position = " << record->stream->get_ordinal_position() << "\n";
+}
+
+void ConsoleUI::show_lazy_output_stream_finite_position_() {
+    int id = choose_lazy_output_stream_id_();
+    LazyOutputStreamRecord* record = get_lazy_output_stream_record_(id);
+
+    if (record->released) {
+        throw std::logic_error("lazy output stream is already released");
+    }
+
+    std::cout << "finite position = " << record->stream->get_position() << "\n";
+}
+
+void ConsoleUI::show_lazy_output_stream_ordinal_position_() {
+    int id = choose_lazy_output_stream_id_();
+    LazyOutputStreamRecord* record = get_lazy_output_stream_record_(id);
+
+    if (record->released) {
+        throw std::logic_error("lazy output stream is already released");
+    }
+
+    std::cout << "ordinal position = " << record->stream->get_ordinal_position() << "\n";
+}
+
+void ConsoleUI::release_lazy_output_stream_sequence_() {
+    int id = choose_lazy_output_stream_id_();
+    LazyOutputStreamRecord* record = get_lazy_output_stream_record_(id);
+
+    if (record->released) {
+        throw std::logic_error("lazy output stream is already released");
+    }
+
+    LazySequence<int>* released = record->stream->release_sequence();
+    record->released = true;
+
+    LazySequenceRecord* target = get_lazy_record_(record->target_lazy_id);
 
     if (released == target->sequence) {
         std::cout << "released original lazy sequence; no new registry object added\n";
         return;
     }
 
-    LazySequence<int>* released_lazy = dynamic_cast<LazySequence<int>*>(released);
+    std::ostringstream description;
+    description << "released from lazy output stream #" << id << ", based on lazy sequence #" << record->target_lazy_id;
 
-    if (released_lazy == nullptr) {
-        delete released;
-        throw std::runtime_error("released sequence is not LazySequence<int>");
+    int result_id = add_lazy_record_(released, LazySequenceOrigin::OutputStreamRelease, description.str());
+    std::cout << "released lazy sequence added as lazy sequence #" << result_id << "\n";
+}
+
+void ConsoleUI::delete_lazy_output_stream_() {
+    int id = choose_lazy_output_stream_id_();
+    LazyOutputStreamRecord* record = get_lazy_output_stream_record_(id);
+
+    if (record->stream->is_open()) {
+        record->stream->close();
     }
 
-    std::ostringstream description;
-    description << "released from output stream #" << id << ", based on lazy sequence #" << record->target_id;
+    delete record->stream;
+    record->stream = nullptr;
+    record->is_deleted = true;
 
-    int result_id = add_lazy_record_(released_lazy, LazySequenceOrigin::OutputStreamRelease, description.str());
-    std::cout << "released sequence added as lazy sequence #" << result_id << "\n";
+    std::cout << "lazy output stream #" << id << " deleted\n";
 }
 
 void ConsoleUI::delete_ordinary_sequence_() {
@@ -1288,36 +1735,6 @@ void ConsoleUI::delete_smart_config_() {
     SmartConfigRecord* record = get_smart_config_record_(id);
     record->is_deleted = true;
     std::cout << "smart data config #" << id << " deleted\n";
-}
-
-void ConsoleUI::delete_input_stream_() {
-    int id = choose_input_stream_id_();
-    InputStreamRecord* record = get_input_stream_record_(id);
-
-    if (record->stream->is_open()) {
-        record->stream->close();
-    }
-
-    delete record->stream;
-    record->stream = nullptr;
-    record->is_deleted = true;
-
-    std::cout << "input stream #" << id << " deleted\n";
-}
-
-void ConsoleUI::delete_output_stream_() {
-    int id = choose_output_stream_id_();
-    OutputStreamRecord* record = get_output_stream_record_(id);
-
-    if (record->stream->is_open()) {
-        record->stream->close();
-    }
-
-    delete record->stream;
-    record->stream = nullptr;
-    record->is_deleted = true;
-
-    std::cout << "output stream #" << id << " deleted\n";
 }
 
 int ConsoleUI::add_sequence_record_(Sequence<int>* sequence, SequenceContainerKind container_kind, SequenceMutability mutability, const std::string& description) {
@@ -1361,37 +1778,66 @@ int ConsoleUI::add_smart_config_record_(const SmartDataConfig& config, const std
     return smart_config_records_.get_size() - 1;
 }
 
-int ConsoleUI::add_input_stream_record_(SequenceInputStream<int>* stream, StreamSourceKind source_kind, int source_id, const std::string& description) {
+int ConsoleUI::add_sequence_input_stream_record_(SequenceInputStream<int>* stream, int source_sequence_id, const std::string& description) {
     if (stream == nullptr) {
-        throw std::invalid_argument("cannot add null input stream record");
+        throw std::invalid_argument("cannot add null sequence input stream record");
     }
 
-    InputStreamRecord* record = new InputStreamRecord;
+    SequenceInputStreamRecord* record = new SequenceInputStreamRecord;
     record->stream = stream;
-    record->source_kind = source_kind;
-    record->source_id = source_id;
+    record->source_sequence_id = source_sequence_id;
     record->is_deleted = false;
     record->description = description;
 
-    input_stream_records_.append(record);
-    return input_stream_records_.get_size() - 1;
+    sequence_input_stream_records_.append(record);
+    return sequence_input_stream_records_.get_size() - 1;
 }
 
-int ConsoleUI::add_output_stream_record_(SequenceOutputStream<int>* stream, StreamTargetKind target_kind, int target_id, const std::string& description) {
+int ConsoleUI::add_lazy_input_stream_record_(LazySequenceInputStream<int>* stream, int source_lazy_id, const std::string& description) {
     if (stream == nullptr) {
-        throw std::invalid_argument("cannot add null output stream record");
+        throw std::invalid_argument("cannot add null lazy input stream record");
     }
 
-    OutputStreamRecord* record = new OutputStreamRecord;
+    LazyInputStreamRecord* record = new LazyInputStreamRecord;
     record->stream = stream;
-    record->target_kind = target_kind;
-    record->target_id = target_id;
+    record->source_lazy_id = source_lazy_id;
+    record->is_deleted = false;
+    record->description = description;
+
+    lazy_input_stream_records_.append(record);
+    return lazy_input_stream_records_.get_size() - 1;
+}
+
+int ConsoleUI::add_sequence_output_stream_record_(SequenceOutputStream<int>* stream, int target_sequence_id, const std::string& description) {
+    if (stream == nullptr) {
+        throw std::invalid_argument("cannot add null sequence output stream record");
+    }
+
+    SequenceOutputStreamRecord* record = new SequenceOutputStreamRecord;
+    record->stream = stream;
+    record->target_sequence_id = target_sequence_id;
     record->released = false;
     record->is_deleted = false;
     record->description = description;
 
-    output_stream_records_.append(record);
-    return output_stream_records_.get_size() - 1;
+    sequence_output_stream_records_.append(record);
+    return sequence_output_stream_records_.get_size() - 1;
+}
+
+int ConsoleUI::add_lazy_output_stream_record_(LazySequenceOutputStream<int>* stream, int target_lazy_id, const std::string& description) {
+    if (stream == nullptr) {
+        throw std::invalid_argument("cannot add null lazy output stream record");
+    }
+
+    LazyOutputStreamRecord* record = new LazyOutputStreamRecord;
+    record->stream = stream;
+    record->target_lazy_id = target_lazy_id;
+    record->released = false;
+    record->is_deleted = false;
+    record->description = description;
+
+    lazy_output_stream_records_.append(record);
+    return lazy_output_stream_records_.get_size() - 1;
 }
 
 SequenceRecord* ConsoleUI::get_sequence_record_(int id) const {
@@ -1436,29 +1882,57 @@ SmartConfigRecord* ConsoleUI::get_smart_config_record_(int id) const {
     return record;
 }
 
-InputStreamRecord* ConsoleUI::get_input_stream_record_(int id) const {
-    if (id < 0 || id >= input_stream_records_.get_size()) {
-        throw std::out_of_range("input stream id is out of range");
+SequenceInputStreamRecord* ConsoleUI::get_sequence_input_stream_record_(int id) const {
+    if (id < 0 || id >= sequence_input_stream_records_.get_size()) {
+        throw std::out_of_range("sequence input stream id is out of range");
     }
 
-    InputStreamRecord* record = input_stream_records_.get(id);
+    SequenceInputStreamRecord* record = sequence_input_stream_records_.get(id);
 
     if (record == nullptr || record->is_deleted || record->stream == nullptr) {
-        throw std::logic_error("input stream record is deleted");
+        throw std::logic_error("sequence input stream record is deleted");
     }
 
     return record;
 }
 
-OutputStreamRecord* ConsoleUI::get_output_stream_record_(int id) const {
-    if (id < 0 || id >= output_stream_records_.get_size()) {
-        throw std::out_of_range("output stream id is out of range");
+LazyInputStreamRecord* ConsoleUI::get_lazy_input_stream_record_(int id) const {
+    if (id < 0 || id >= lazy_input_stream_records_.get_size()) {
+        throw std::out_of_range("lazy input stream id is out of range");
     }
 
-    OutputStreamRecord* record = output_stream_records_.get(id);
+    LazyInputStreamRecord* record = lazy_input_stream_records_.get(id);
 
     if (record == nullptr || record->is_deleted || record->stream == nullptr) {
-        throw std::logic_error("output stream record is deleted");
+        throw std::logic_error("lazy input stream record is deleted");
+    }
+
+    return record;
+}
+
+SequenceOutputStreamRecord* ConsoleUI::get_sequence_output_stream_record_(int id) const {
+    if (id < 0 || id >= sequence_output_stream_records_.get_size()) {
+        throw std::out_of_range("sequence output stream id is out of range");
+    }
+
+    SequenceOutputStreamRecord* record = sequence_output_stream_records_.get(id);
+
+    if (record == nullptr || record->is_deleted || record->stream == nullptr) {
+        throw std::logic_error("sequence output stream record is deleted");
+    }
+
+    return record;
+}
+
+LazyOutputStreamRecord* ConsoleUI::get_lazy_output_stream_record_(int id) const {
+    if (id < 0 || id >= lazy_output_stream_records_.get_size()) {
+        throw std::out_of_range("lazy output stream id is out of range");
+    }
+
+    LazyOutputStreamRecord* record = lazy_output_stream_records_.get(id);
+
+    if (record == nullptr || record->is_deleted || record->stream == nullptr) {
+        throw std::logic_error("lazy output stream record is deleted");
     }
 
     return record;
@@ -1485,17 +1959,31 @@ int ConsoleUI::choose_smart_config_id_() const {
     return id;
 }
 
-int ConsoleUI::choose_input_stream_id_() const {
-    list_input_streams_();
-    int id = read_int("input stream id: ");
-    get_input_stream_record_(id);
+int ConsoleUI::choose_sequence_input_stream_id_() const {
+    list_sequence_input_streams_();
+    int id = read_int("sequence input stream id: ");
+    get_sequence_input_stream_record_(id);
     return id;
 }
 
-int ConsoleUI::choose_output_stream_id_() const {
-    list_output_streams_();
-    int id = read_int("output stream id: ");
-    get_output_stream_record_(id);
+int ConsoleUI::choose_lazy_input_stream_id_() const {
+    list_lazy_input_streams_();
+    int id = read_int("lazy input stream id: ");
+    get_lazy_input_stream_record_(id);
+    return id;
+}
+
+int ConsoleUI::choose_sequence_output_stream_id_() const {
+    list_sequence_output_streams_();
+    int id = read_int("sequence output stream id: ");
+    get_sequence_output_stream_record_(id);
+    return id;
+}
+
+int ConsoleUI::choose_lazy_output_stream_id_() const {
+    list_lazy_output_streams_();
+    int id = read_int("lazy output stream id: ");
+    get_lazy_output_stream_record_(id);
     return id;
 }
 
@@ -1519,20 +2007,18 @@ void ConsoleUI::handle_ordinary_sequence_result_(int source_id, Sequence<int>* r
 }
 
 bool ConsoleUI::ordinary_sequence_has_stream_dependency_(int id) const {
-    for (int i = 0; i < input_stream_records_.get_size(); ++i) {
-        InputStreamRecord* record = input_stream_records_.get(i);
+    for (int i = 0; i < sequence_input_stream_records_.get_size(); ++i) {
+        SequenceInputStreamRecord* record = sequence_input_stream_records_.get(i);
 
-        if (record != nullptr && !record->is_deleted && record->stream != nullptr &&
-            record->source_kind == StreamSourceKind::OrdinarySequence && record->source_id == id) {
+        if (record != nullptr && !record->is_deleted && record->stream != nullptr && record->source_sequence_id == id) {
             return true;
         }
     }
 
-    for (int i = 0; i < output_stream_records_.get_size(); ++i) {
-        OutputStreamRecord* record = output_stream_records_.get(i);
+    for (int i = 0; i < sequence_output_stream_records_.get_size(); ++i) {
+        SequenceOutputStreamRecord* record = sequence_output_stream_records_.get(i);
 
-        if (record != nullptr && !record->is_deleted && record->stream != nullptr && !record->released &&
-            record->target_kind == StreamTargetKind::OrdinarySequence && record->target_id == id) {
+        if (record != nullptr && !record->is_deleted && record->stream != nullptr && !record->released && record->target_sequence_id == id) {
             return true;
         }
     }
@@ -1541,20 +2027,18 @@ bool ConsoleUI::ordinary_sequence_has_stream_dependency_(int id) const {
 }
 
 bool ConsoleUI::lazy_sequence_has_stream_dependency_(int id) const {
-    for (int i = 0; i < input_stream_records_.get_size(); ++i) {
-        InputStreamRecord* record = input_stream_records_.get(i);
+    for (int i = 0; i < lazy_input_stream_records_.get_size(); ++i) {
+        LazyInputStreamRecord* record = lazy_input_stream_records_.get(i);
 
-        if (record != nullptr && !record->is_deleted && record->stream != nullptr &&
-            record->source_kind == StreamSourceKind::LazySequence && record->source_id == id) {
+        if (record != nullptr && !record->is_deleted && record->stream != nullptr && record->source_lazy_id == id) {
             return true;
         }
     }
 
-    for (int i = 0; i < output_stream_records_.get_size(); ++i) {
-        OutputStreamRecord* record = output_stream_records_.get(i);
+    for (int i = 0; i < lazy_output_stream_records_.get_size(); ++i) {
+        LazyOutputStreamRecord* record = lazy_output_stream_records_.get(i);
 
-        if (record != nullptr && !record->is_deleted && record->stream != nullptr && !record->released &&
-            record->target_kind == StreamTargetKind::LazySequence && record->target_id == id) {
+        if (record != nullptr && !record->is_deleted && record->stream != nullptr && !record->released && record->target_lazy_id == id) {
             return true;
         }
     }
@@ -1666,8 +2150,8 @@ void ConsoleUI::print_lazy_prefix_(const LazySequence<int>* sequence, std::size_
 }
 
 void ConsoleUI::cleanup_() {
-    for (int i = 0; i < input_stream_records_.get_size(); ++i) {
-        InputStreamRecord* record = input_stream_records_.get(i);
+    for (int i = 0; i < sequence_input_stream_records_.get_size(); ++i) {
+        SequenceInputStreamRecord* record = sequence_input_stream_records_.get(i);
 
         if (record != nullptr) {
             delete record->stream;
@@ -1676,8 +2160,28 @@ void ConsoleUI::cleanup_() {
         }
     }
 
-    for (int i = 0; i < output_stream_records_.get_size(); ++i) {
-        OutputStreamRecord* record = output_stream_records_.get(i);
+    for (int i = 0; i < lazy_input_stream_records_.get_size(); ++i) {
+        LazyInputStreamRecord* record = lazy_input_stream_records_.get(i);
+
+        if (record != nullptr) {
+            delete record->stream;
+            record->stream = nullptr;
+            delete record;
+        }
+    }
+
+    for (int i = 0; i < sequence_output_stream_records_.get_size(); ++i) {
+        SequenceOutputStreamRecord* record = sequence_output_stream_records_.get(i);
+
+        if (record != nullptr) {
+            delete record->stream;
+            record->stream = nullptr;
+            delete record;
+        }
+    }
+
+    for (int i = 0; i < lazy_output_stream_records_.get_size(); ++i) {
+        LazyOutputStreamRecord* record = lazy_output_stream_records_.get(i);
 
         if (record != nullptr) {
             delete record->stream;

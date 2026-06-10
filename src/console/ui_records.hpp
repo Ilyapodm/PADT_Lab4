@@ -6,6 +6,8 @@
 #include "lazy_sequence/lazy_sequence.hpp"
 #include "streams/sequence_input_stream.hpp"
 #include "streams/sequence_output_stream.hpp"
+#include "streams/lazy_sequence_input_stream.hpp"
+#include "streams/lazy_sequence_output_stream.hpp"
 #include "smart_data/smart_data_config.hpp"
 
 // metadata records are ui-level objects; they do not affect sequence semantics
@@ -37,16 +39,6 @@ enum class LazySequenceOrigin {
     OutputStreamRelease
 };
 
-enum class StreamSourceKind {
-    OrdinarySequence,
-    LazySequence
-};
-
-enum class StreamTargetKind {
-    OrdinarySequence,
-    LazySequence
-};
-
 struct SequenceRecord {
     Sequence<int>* sequence;
     SequenceContainerKind container_kind;
@@ -68,18 +60,31 @@ struct SmartConfigRecord {
     std::string description;
 };
 
-struct InputStreamRecord {
+struct SequenceInputStreamRecord {
     SequenceInputStream<int>* stream;
-    StreamSourceKind source_kind;
-    int source_id;
+    int source_sequence_id;
     bool is_deleted;
     std::string description;
 };
 
-struct OutputStreamRecord {
+struct LazyInputStreamRecord {
+    LazySequenceInputStream<int>* stream;
+    int source_lazy_id;
+    bool is_deleted;
+    std::string description;
+};
+
+struct SequenceOutputStreamRecord {
     SequenceOutputStream<int>* stream;
-    StreamTargetKind target_kind;
-    int target_id;
+    int target_sequence_id;
+    bool released;
+    bool is_deleted;
+    std::string description;
+};
+
+struct LazyOutputStreamRecord {
+    LazySequenceOutputStream<int>* stream;
+    int target_lazy_id;
     bool released;
     bool is_deleted;
     std::string description;
@@ -102,28 +107,6 @@ inline const char* to_string(SequenceMutability value) {
             return "mutable";
         case SequenceMutability::Immutable:
             return "immutable";
-        default:
-            return "unknown";
-    }
-}
-
-inline const char* to_string(StreamSourceKind value) {
-    switch (value) {
-        case StreamSourceKind::OrdinarySequence:
-            return "ordinary sequence";
-        case StreamSourceKind::LazySequence:
-            return "lazy sequence";
-        default:
-            return "unknown";
-    }
-}
-
-inline const char* to_string(StreamTargetKind value) {
-    switch (value) {
-        case StreamTargetKind::OrdinarySequence:
-            return "ordinary sequence";
-        case StreamTargetKind::LazySequence:
-            return "lazy sequence";
         default:
             return "unknown";
     }

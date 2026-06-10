@@ -148,7 +148,7 @@ inline std::ostream& operator<<(std::ostream& out, const Ordinal& ordinal) {
     return out;
 }
 
-inline Ordinal read_ordinal_index(const std::string& label) {
+inline Ordinal read_ordinal(const std::string& label) {
     std::cout << label << "\n";
     std::cout << "1. finite n\n";
     std::cout << "2. omega\n";
@@ -171,16 +171,20 @@ inline Ordinal read_ordinal_index(const std::string& label) {
     return Ordinal(omega_coeff, finite_part);
 }
 
+inline Ordinal read_ordinal_index(const std::string& label) {
+    return read_ordinal(label);
+}
+
 inline Ordinal read_generator_length(const std::string& label) {
     std::cout << "\n" << label << "\n";
     std::cout << "1. finite n\n";
     std::cout << "2. omega\n";
 
-    const int choice = read_menu_choice("choice: ", 1, 2);
+    int choice = read_menu_choice("choose length type: ", 1, 2);
 
     if (choice == 1) {
-        const std::size_t value = read_size_t("finite length: ");
-        return Ordinal(value);
+        std::size_t finite = read_size_t("finite length: ");
+        return Ordinal(finite);
     }
 
     return Ordinal::omega();
