@@ -46,7 +46,7 @@ public:
             throw std::out_of_range("LazySequenceInputStream<T>::input: end of stream");
         }
 
-        T result = source_->get_at(position_);
+        T result = source_->get(position_);
 
         position_ = position_ + Ordinal(1);
 
@@ -57,9 +57,8 @@ public:
     std::size_t get_position() const override {
         ensure_open_();
 
-        if (!position_.is_finite()) {
+        if (!position_.is_finite()) 
             throw std::logic_error("LazySequenceInputStream<T>::get_position: ordinal position is not finite");
-        }
 
         return position_.get_finite_part();
     }
@@ -92,9 +91,8 @@ public:
     Ordinal seek(const Ordinal& index) {
         ensure_open_();
 
-        if (index > source_->get_ordinal_length()) {
+        if (index > source_->get_ordinal_length()) 
             throw std::out_of_range("LazySequenceInputStream<T>::seek: index is out of range");
-        }
 
         position_ = index;
 
@@ -106,9 +104,8 @@ public:
     }
 
     void open() override {
-        if (is_open_) {
+        if (is_open_) 
             throw std::logic_error("LazySequenceInputStream<T>::open: the stream is already open");
-        }
 
         position_ = Ordinal();
         is_open_ = true;
@@ -132,8 +129,7 @@ private:
 
     // checks that stream is open
     void ensure_open_() const {
-        if (!is_open_) {
+        if (!is_open_) 
             throw std::logic_error("LazySequenceInputStream<T>::ensure_open_: the stream is closed");
-        }
     }
 };
