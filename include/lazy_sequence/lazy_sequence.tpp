@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <functional>
 #include <stdexcept>
+#include <limits>
 
 #include "core/ordinal.hpp"
 #include "adt/ring_buffer.hpp"
